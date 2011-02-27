@@ -8,8 +8,14 @@ KeyCandy = (function($){
     var pub = {},
     _target,        
     _class = 'keycandy',
+    _clear_timeout = clearTimeout,
+    _remove_class = 'removeClass',
+    _remove_attr = 'removeAttr',
     _default_parent = 'body',
     _timeout_attr = 'data-keyCandy_timeout',
+    _clickable = function($el) {
+        return $el.is('a, :checkbox, :button, :submit, :radio, :reset')
+    },
     _tooltip_toggler = function(event){
         var $class_target = (_target) ? $(_target) : $(_default_parent),
             $target = $(event.target),
@@ -17,29 +23,37 @@ KeyCandy = (function($){
             _timeout = $class_target.attr(_timeout_attr) || 0,
             _matches = [17, 91, 93, 224];
         if (_matches.indexOf(_code) > -1) {
-            if (_timeout) {
-                //console.log('clearing timeout %s', _timeout);
-                clearTimeout(_timeout);
-            }
             $class_target.addClass(_class).attr(_timeout_attr, setTimeout(function(){
                 //console.log('firing timeout function to clear class: %s from parent with attribute: %s', _class, _timeout_attr);
-                $('.' + _class).removeClass(_class).removeAttr(_timeout_attr);
+                $('.' + _class)[_remove_class](_class)[_remove_attr](_timeout_attr);
             }, 5000));
         } else {
-            $class_target.removeClass(_class);                           
+            $class_target[_remove_class](_class)[_remove_attr](_timeout_attr);                           
             if ((_code > 46 && _code < 91) && !($target.is(':text, :password, textarea'))) {
-                $('[accesskey="' + String.fromCharCode(_code) + '"]').click();
+                var _selector = '[accesskey="' + String.fromCharCode(_code) + '"]',
+                    $el = $(_selector);
+                if ($el.length) {
+                    //console.log('Selector: %s is clickable: %s', _selector, _clickable($el));
+                    $el = ($el.is('label')) ? $('#' + $el.attr('for')) : $el;
+                    $el[(_clickable($el))?'click':'focus']();
+                    return false;
+                }
             }
+        }
+        
+        if (_timeout) {
+            //console.log('clearing timeout %s', _timeout);
+            _clear_timeout(_timeout);
         }
     },
     init = function(_parent){
         _target = _parent || _default_parent;
-        $(window).keydown(_tooltip_toggler);
+        $(window).keyup(_tooltip_toggler);
         $(_target).click(function(){
           var $this = $(this);
           if ($this.hasClass(_class)) {
-            clearTimeout($this.attr(_timeout_attr));
-            $this.removeClass(_class).removeAttr(_timeout_attr);
+            _clear_timeout($this.attr(_timeout_attr));
+            $this[_remove_class](_class)[_remove_attr](_timeout_attr);
           }
         });
         pub.initialized = true;

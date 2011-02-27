@@ -2,10 +2,10 @@
 .keycandy *[accesskey] {
     position: relative; 
 }
-.keycandy *[accesskey]:after {
+.keycandy *[accesskey]:before {
     position: absolute;
-    right: -0.15em;
-    bottom: -0.75em;
+    right: -8px;
+    bottom: -8px;
     content: attr(accesskey);
     width: 24px;
     height: 24px;
