@@ -1,0 +1,26 @@
+/* Example CSS styles for Key Candy tooltips */
+.keycandy *[accesskey] {
+    position: relative; 
+}
+.keycandy *[accesskey]:after {
+    position: absolute;
+    right: -0.15em;
+    bottom: -0.75em;
+    content: attr(accesskey);
+    width: 24px;
+    height: 24px;
+    font: 16px/24px Arial, Helvetica, sans-serif;
+    vertical-align: middle;
+    background-color: #ffffaa;
+    color: #3f3f3f;
+    text-align: center;
+    border: 1px solid #cccccc;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -moz-box-shadow: 0px 0px 3px #cecece;
+    -webkit-box-shadow: 0px 0px 3px #cecece;
+    box-shadow: 0px 0px 3px #cecece;
+    text-decoration: none;
+    z-index: 999; 
+}
