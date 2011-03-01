@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Key Candy Test</title>
+  <style type="text/css">
+    body {
+        background: #DDD;
+    }
+    .keycandy *[accesskey] {
+        position: relative; 
+    }
+    
+    .keycandy *[accesskey]:before {
+        position: absolute;
+        right: -8px;
+        bottom: -8px;
+        content: attr(accesskey);
+        width: 24px;
+        height: 24px;
+        font: 16px/24px Arial, Helvetica, sans-serif;
+        vertical-align: middle;
+        background-color: #ffffaa;
+        color: #3f3f3f;
+        text-align: center;
+        border: 1px solid #cccccc;
+        -moz-border-radius: 8px;
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+        -moz-box-shadow: 0px 0px 3px #cecece;
+        -webkit-box-shadow: 0px 0px 3px #cecece;
+        box-shadow: 0px 0px 3px #cecece;
+        text-decoration: none;
+        z-index: 999; 
+    } 
+  </style>
+  <link rel="stylesheet" type="text/css" href="keyCandy.css" />
+  </head>
+  <body>
+  <h1>Key Candy Demo Page</h1>
+  <p>Press [Ctrl] or [&#x2318;] to make the accesskey tooltips appear. Then press one to see what happens</p>
+  <p>
+    <a href="#" accesskey="A">A Link</a>
+  </p>
+  <p>
+    <button accesskey="B">A Button</button>
+  </p>    
+  <p><label accesskey="C" for="text_input">A text input</label><input id="text_input" name="text_input" type="text" /></p>
+  <p><label accesskey="H" for="check_it">A Checkbox: <input id="check_it" type="checkbox" /></label></p>
+  <p><label for="comment" accesskey="T">A Textarea</label><textarea id="comment"></textarea></p>
+  <p><label for="choices" accesskey="S">Choose one: </label><select id="choices"><option>First</option><option>Second</option></select>
+  <hr>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+  <script type="text/javascript" src="keyCandy.min.js"></script>
+  <script type="text/javascript"> $(function(){ 
+    KeyCandy.init(); 
+    $('a, button').click(function(e){
+        e.preventDefault();
+        $(document.body).append('<p>You clicked: \'' + $(this).text() + '\'</p>');
+    });
+  }); 
+    
+  </script>
+  </body>
+</html>
