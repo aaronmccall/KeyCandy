@@ -41,15 +41,15 @@
             <h2>The Quick Demo:</h2>
 
 
-            <h3>Step 1. put &quot;accesskey&quot; attributes on your elements.</h3>
-<pre class="prettyprint lang-js">
+            <h3 id="keycandy_html">Step 1. put &quot;accesskey&quot; attributes on your elements.</h3>
+<pre class="prettyprint lang-html">
 <code>&lt;p&gt;&lt;a href=&quot;#&quot; accesskey=&quot;A&quot;&gt;An Anchor&lt;/a&gt;&lt;/p&gt;
 &lt;form&gt;
     &lt;p&gt;&lt;button accesskey=&quot;B&quot;&gt;A Button&lt;/button&gt;&lt;/p&gt;    
-    &lt;p&gt;
+    &lt;p&gt;<span id="label_example">
         &lt;label accesskey=&quot;C&quot; for=&quot;text_input&quot;&gt;A text input&lt;/label&gt;
         &lt;input id=&quot;text_input&quot; name=&quot;text_input&quot; type=&quot;text&quot; /&gt;
-    &lt;/p&gt;
+    &lt;/p&gt;</span>
     &lt;p&gt;
         &lt;label accesskey=&quot;H&quot; for=&quot;check_it&quot;&gt;A Checkbox: &lt;input id=&quot;check_it&quot; type=&quot;checkbox&quot; /&gt;&lt;/label&gt;
     &lt;/p&gt;
@@ -110,10 +110,20 @@ KeyCandy.init();
 
             <h2>What else do I need to know?</h2>
 
-            <p>Not much really. Just include <a href="http://jquery.com">jQuery</a>
-            (<a href="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">available via Google CDN here</a>) and
-            keyCandy.js (or keyCandy.min.js).</p>
-
+            <p>Not much really.</p>
+            <ul>
+                <li>Replaced elements (e.g., img, input, select, textarea) 
+                <a href="http://www.w3.org/TR/css3-content/#replacedContent">
+                    do not have the :before and :after pseudo-elements.                     
+                </a> so you have to &quot;workaround&quot; that by...<a href="#label_example">using best 
+                practices!</a> If you are using proper labels for your form elements, you can simply add
+                the accesskey attribute to the label.
+                </li>
+                <li>Currently, Key Candy depends on <a href="http://jquery.com">jQuery</a>
+                (<a href="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js">available via Google CDN.</a>) 
+                for class manipulations and event handling</li>
+                <li>So, just include jQuery and keyCandy.js (or keyCandy.min.js).</li>
+            </ul>
             <h2>Why would we need this?</h2>
 
             <p>Because people are using your web app to do something and it should help them do that something as much as it can.
