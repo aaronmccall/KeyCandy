@@ -18,7 +18,7 @@
 
 .keycandy:before {
 	top:2px;
-	content:"Press [esc] to clear tooltips."
+	content:"Press [esc] to clear hotkey tooltips."
 }
 
 .keycandy *[accesskey] {
