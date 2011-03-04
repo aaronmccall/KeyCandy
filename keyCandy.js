@@ -31,7 +31,7 @@ KeyCandy = (function($){
                                 $el.one('click', function(){ location.href = this.href; });
                             }
                             $el[$el.is(':text, :password, textarea, select')?'focus':'click']();
-//                            event.preventDefault();
+                            event.preventDefault();
                         }
                     }
                     $class_target[_remove_class](_class);
@@ -49,7 +49,7 @@ KeyCandy = (function($){
 //        pub.initialized = true;
     };
     pub = {
-        version: '0.5',
+        version: '0.5.1',
 //        initialized: false,
         'init': init,
 //        init_funcs: [init]
