@@ -17,19 +17,30 @@
     <a href="#" accesskey="A">A Link</a>
   </p>
   <p>
+    <a href="http://google.com" accesskey="G">A Link to Google</a>
+  </p>
+  <p>
     <button accesskey="B">A Button</button>
   </p>    
   <p><label accesskey="C" for="text_input">A text input</label><input id="text_input" name="text_input" type="text" /></p>
   <p><label accesskey="H" for="check_it">A Checkbox: <input id="check_it" type="checkbox" /></label></p>
   <p><label for="comment" accesskey="T">A Textarea</label><textarea id="comment"></textarea></p>
-  <p><label for="choices" accesskey="S">Choose one: </label><select id="choices"><option>First</option><option>Second</option></select>
+  <p><label for="submit" accesskey="U">A Submit Input</label><input type="submit" id="submit" value="Submit" /></p>
+  <p><label for="choices" accesskey="S">Choose one: </label>
+     <select id="choices">
+         <option>First</option>
+         <option>Second</option>
+     </select>
+  </p>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-  <script type="text/javascript" src="keyCandy.min.js"></script>
+  <script type="text/javascript" src="keyCandy.js"></script>
   <script type="text/javascript"> $(function(){ 
     KeyCandy.init(); 
-    $('a, button').click(function(e){
+    $('a, button, input[type="submit"]').click(function(e){
         e.preventDefault();
-        $(document.body).append('<p>You clicked: \'' + $(this).text() + '\'</p>');
+        var $this = $(this),
+            _text = ($this.text()=='') ? $this.val() : $this.text();
+        $(document.body).append('<p>You clicked: \'' + _text + '\'</p>');
     });
   }); 
     
