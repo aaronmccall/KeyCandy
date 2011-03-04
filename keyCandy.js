@@ -27,8 +27,11 @@ KeyCandy = (function($){
                         if ($el.length) {
     //                        console.log('Selector: %s is %s', _selector, $el.attr('tagName'));
                             $el = ($el.is('label')) ? $('#' + $el.attr('for')) : $el;
+                            if ($el.is('a')) {
+                                $el.one('click', function(){ location.href = this.href; });
+                            }
                             $el[$el.is(':text, :password, textarea, select')?'focus':'click']();
-                            event.preventDefault();
+//                            event.preventDefault();
                         }
                     }
                     $class_target[_remove_class](_class);
