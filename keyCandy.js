@@ -3,7 +3,9 @@
  * Provides tooltips for elements with accesskey attributes and focuses/activates
  * elements with an accesskey in a standardized, cross-browser, cross-platform way.
  */
-/* !(c) 2011 Aaron McCall. MIT license. */
+/*! (c) 2011 Aaron McCall. 
+ *  MIT license (see http://creativecommons.org/licenses/MIT/). 
+ */
 KeyCandy = (function($){
     var pub = {},
     _target,
