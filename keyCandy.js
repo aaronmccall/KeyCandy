@@ -15,13 +15,16 @@ KeyCandy = (function($){
     _default_parent = 'body',
     _tooltip_toggler = function(event){
         var $class_target = (_target) ? $(_target) : $(_default_parent),
-            $target = $(event.target),
+            _target = event.target,
+            _tag = _target.tagName.toLowerCase(),
+            $target = $(_target),
             _code = event.keyCode,
-            _valid_accesskey = (_code > 46 && _code < 91);
-        if (_code === 17) {
+            _valid_accesskey = (_code > 46 && _code < 91),
+            _typeable = _tag === 'textarea' || (_tag === 'input' && /text|password/.test(_target.type) > -1);
+        if (_code === 17 && event.type == 'keydown' && !_typeable) {
             $class_target.addClass(_class);
         } else {
-            if ($class_target[_has_class](_class)) {
+            if ($class_target[_has_class](_class) && event.type == 'keyup' && !_typeable) {
                 if (_code == 27 || _valid_accesskey) {
                     if (_valid_accesskey) {
                         var _selector = '[accesskey="' + String.fromCharCode(_code) + '"]',
@@ -29,11 +32,13 @@ KeyCandy = (function($){
                         if ($el.length) {
     //                        console.log('Selector: %s is %s', _selector, $el.attr('tagName'));
                             $el = ($el.is('label')) ? $('#' + $el.attr('for')) : $el;
+                            var _action = $el.is(':text, :password, textarea, select')?'focus':'click';
                             if ($el.is('a')) {
-                                $el.one('click', function(){ location.href = this.href; });
+                                $el.one('click', function(){ location.href = this.href });
                             }
-                            $el[$el.is(':text, :password, textarea, select')?'focus':'click']();
-                            event.preventDefault();
+//                            console.log('Triggering %s via .%s %s which contains %s elements', _action, _class, _selector, $el.length);
+                            $el.trigger(_action);
+//                            if (_action == 'focus') event.preventDefault();
                         }
                     }
                     $class_target[_remove_class](_class);
@@ -43,7 +48,7 @@ KeyCandy = (function($){
     },
     init = function(_parent){
         _target = _parent || _default_parent;
-        $(window).keydown(_tooltip_toggler);
+        $(window).bind('keydown keyup', _tooltip_toggler);
         $(_target).click(function(){
           var $this = $(this);
           if ($this[_has_class](_class)) $this[_remove_class](_class);
@@ -51,10 +56,8 @@ KeyCandy = (function($){
 //        pub.initialized = true;
     };
     pub = {
-        version: '0.5.1',
-//        initialized: false,
-        'init': init,
-//        init_funcs: [init]
+        version: '0.6',
+        'init': init
     };
     return pub;
 })($ || jQuery);
