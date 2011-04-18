@@ -3,7 +3,7 @@
 	position:absolute;
 	font:16px/24px Arial,Helvetica,sans-serif;
 	vertical-align:middle;
-	color:#3f3f3f;
+	color:#333;
 	text-align:center;
 	border:1px solid #ccc;
 	-moz-border-radius:8px;
@@ -12,7 +12,8 @@
 	-moz-box-shadow:0 0 3px #bababa;
 	-webkit-box-shadow:0 0 3px #bababa;
 	box-shadow:0 0 3px #bababa;
-	text-decoration:none;
+	text-decoration:none !important;
+	text-indent: 0 !important;
 	z-index:999
 }
 
