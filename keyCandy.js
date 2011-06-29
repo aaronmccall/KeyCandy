@@ -4,6 +4,7 @@
  * elements with an accesskey in a standardized, cross-browser, cross-platform way.
  */
 /*! (c) 2011 Aaron McCall. 
+ *  Contributors: Beau Sorenson
  *  MIT license (see http://creativecommons.org/licenses/MIT/). 
  */
 KeyCandy = (function($){
@@ -61,7 +62,7 @@ KeyCandy = (function($){
         });
     };
     pub = {
-        version: '0.6',
+        version: '0.7',
         'init': init
     };
     return pub;
