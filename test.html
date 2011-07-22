@@ -33,9 +33,10 @@
      </select>
   </p>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+  <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="js/jquery.min.js"%3E%3C/script%3E'))</script>
   <script type="text/javascript" src="keyCandy.js"></script>
   <script type="text/javascript"> $(function(){ 
-    KeyCandy.init(); 
+    KeyCandy.init(null,{removeKey: 224});
     $('a, button, input[type="submit"]').click(function(e){
         e.preventDefault();
         var $this = $(this),
