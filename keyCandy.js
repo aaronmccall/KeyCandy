@@ -7,6 +7,7 @@
  *  Contributors: Beau Sorenson
  *  MIT license (see http://creativecommons.org/licenses/MIT/). 
  */
+//function e(){ return (typeof exports === 'undefined') ? ((typeof window === 'undefined)?this:window) : exports }
 KeyCandy = (function($){
     var pub = {},
     _os = /Linux|Windows|Macintosh/.exec(navigator.userAgent).toString(),
@@ -16,7 +17,6 @@ KeyCandy = (function($){
     _has_class = 'hasClass',
     _default_parent = 'body',
     _control_key = (_os==='Macintosh')?224:17,
-    _remove_key = 27,
     _require_control_key = false,
     _valid_override_keys = {'alt':1, 'ctrl':1, 'meta':1, 'shift':1},
     _typeable_override_key = 'alt',
@@ -27,12 +27,12 @@ KeyCandy = (function($){
             _tag = _target.tagName.toLowerCase(),
             $target = $(_target),
             _code = event.keyCode,
-            _showtips_event = _code === _control_key && event.type == 'keydown',
-            _accesskey_event = ($class_target[_has_class](_class)||!_require_control_key) && event.type == 'keyup',
+            _showtips_event = _code === _control_key,// && event.type == 'keydown',
+            _accesskey_event = ($class_target[_has_class](_class)||!_require_control_key),// && event.type == 'keyup',
             _valid_code = (_code > 46 && _code < 91),
             _typeable = (_tag === 'textarea' || (_tag === 'input' && /text|password/.test(_target.type) > -1)) && !event[_typeable_override_key+'Key'];
         if (_showtips_event && !_typeable) {
-            $class_target.addClass(_class);
+            $class_target.toggleClass(_class);
         } else {
             if (_accesskey_event && !_typeable) {
                 if (_code == _remove_key || _valid_code) {
@@ -50,12 +50,12 @@ KeyCandy = (function($){
                                 $el.one('click', function(){ this.href && (location.href = this.href) });
                             }
                             $el.trigger(_action);
+                            event.preventDefault();
+                            event.stopPropagation();
                         }
                     }
-                    $class_target[_remove_class](_class);
-                    event.preventDefault();
-                    event.stopPropagation();
                 }
+                $class_target[_remove_class](_class);
             }
         }
     },
@@ -64,13 +64,12 @@ KeyCandy = (function($){
         
         // Control key and menu removal key overrides
         opt.controlKey && (_control_key = opt.controlKey);
-        opt.removeKey  && (_remove_key = opt.removeKey);
         opt.requireControlKey && (_require_control_key = opt.requireControlKey);
         opt.typeableOverrideKey && _valid_override_keys[opt._typeable_override_key] && (_typeable_override_key = opt.typeableOverrideKey);
         
         _target = _parent || _default_parent;
         //TODO: determine if we can eliminate the keyup, since that will allow us to activate the accesskey from a typeable element
-        $('window, input, textarea').bind('keydown keyup', _tooltip_toggler);
+        $(window).bind('keydown', _tooltip_toggler);
         $(_target).click(function(){
           var $this = $(this);
           if ($this[_has_class](_class)) $this[_remove_class](_class);
@@ -78,7 +77,8 @@ KeyCandy = (function($){
     };
     pub = {
         version: '0.7',
-        'init': init
+        init: init,
+        os: _os
     };
     return pub;
 })($ || jQuery);
