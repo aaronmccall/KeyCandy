@@ -22,7 +22,7 @@
 
 .keycandy:before {
 	top:2px;
-	content:"Press [esc] to clear hotkey tooltips."
+	content: attr(data-kchint)
 }
 
 .keycandy *[accesskey] {

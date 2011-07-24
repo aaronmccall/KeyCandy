@@ -10,7 +10,7 @@
     </style>
     <link rel="stylesheet" type="text/css" href="keyCandy.css"/>
 </head>
-<body>
+<body data-kchint="">
 <h1>Key Candy Demo Page</h1>
 
 <p>Press [<span id="controlKey"></span>] to make the accesskey tooltips appear. Then press one to see what happens</p>
@@ -44,8 +44,9 @@
 <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="jquery.min.js"%3E%3C/script%3E'))</script>
 <script type="text/javascript" src="keyCandy.js"></script>
 <script type="text/javascript"> $(function() {
-    var os_key_map = {'Windows': 'ctrl', 'Linux': 'ctrl', 'Macintosh': '&#x2318;'};
-    KeyCandy.init(null, {removeKey: 224});
+    var os_key_map = {'Windows': 'ctrl', 'Linux': 'ctrl', 'Macintosh': '&#x2318;'},
+        keycode_map = {'Windows': 'ctrl', 'Linux': 'ctrl', 'Macintosh': String.fromCharCode(parseInt('2318',16))};
+    KeyCandy.init();
     $('a, button, input[type="submit"]').click(function(e) {
         e.preventDefault();
         var $this = $(this),
@@ -53,6 +54,7 @@
         $(document.body).append('<p>You clicked: \'' + _text + '\'</p>');
     });
     $('#controlKey').html(os_key_map[KeyCandy.os]);
+    $(document.body).attr('data-kchint', 'Press [' + keycode_map[KeyCandy.os] + '] to hide tooltips.');
 });
 
 </script>
