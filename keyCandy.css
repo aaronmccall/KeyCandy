@@ -3,7 +3,7 @@
 	position:absolute;
 	font:16px/24px Arial,Helvetica,sans-serif;
 	vertical-align:middle;
-	color:#3f3f3f;
+	color:#333;
 	text-align:center;
 	border:1px solid #ccc;
 	-moz-border-radius:8px;
@@ -12,13 +12,17 @@
 	-moz-box-shadow:0 0 3px #bababa;
 	-webkit-box-shadow:0 0 3px #bababa;
 	box-shadow:0 0 3px #bababa;
-	text-decoration:none;
-	z-index:999
+	text-decoration:none !important;
+	text-indent: 0 !important;
+	z-index:999;
+    opacity: 0.7;
+    -moz-opacity: 0.7;
+    -webkit-opacity: 0.7;
 }
 
 .keycandy:before {
 	top:2px;
-	content:"Press [esc] to clear hotkey tooltips."
+	content: attr(data-kchint);
 }
 
 .keycandy *[accesskey] {
