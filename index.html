@@ -158,6 +158,7 @@ KeyCandy.init();
                 <a href="http://github.com">GitHub</a> provides.</li>
                 <li><a href="http://twitter.com/jamesmenera">James Menera</a>: 
                 who generously loaned me the use of his iMac for testing purposes.</li>
+                <li><a href="https://github.com/sorensen">Beau Sorensen</a>: contributed control key configuration and href validation.</li>
             </ul>
             <p>Aaron was inspired by the following:</p>
             <ul>
@@ -178,11 +179,11 @@ KeyCandy.init();
             jQuery supports.</p>
 
             <ul>
-                <li>IE 8 and 9 on Windows 7 (I don't have access to any older versions right now.)</li>
+                <li>IE 8<sup><a href="#footnote_ie8">1</a></sup> and 9 on Windows 7 (I don't have access to any older versions right now.)</li>
 
-                <li>FF 3.6 on Windows 7, Ubuntu Linux 10.04 and Mac OS X</li>
+                <li>FF 3.6, 4 and 5 on Windows 7, Ubuntu Linux 10.04 and Mac OS X</li>
 
-                <li>Chrome 9 on Windows 7, Ubuntu Linux 10.04 and Mac OS X</li>
+                <li>Chrome 9-12 on Windows 7, Ubuntu Linux 10.04 and Mac OS X</li>
 
                 <li>Safari 5 on Windows 7 and Mac OS X</li>
             </ul>
@@ -203,6 +204,31 @@ KeyCandy.init();
                         filing an issue on GitHub!</a>)</li>
                     </ul>
                 </li>
+                <li>
+                    0.6
+                    <ul>
+                        <li>refactored to avoid inadvertent hotkey activation when typing in 'typeable' fields.</li>
+                    </ul>
+                </li>
+                <li>
+                    0.7
+                    <ul>
+                        <li>Added control key configuration and href validation. (Thanks, Beau!)</li>
+                    </ul>
+                </li>
+                <li>
+                    1.0RC
+                    <ul>
+                        <li>Added more intelligent control key defaults depending on OS/browser: [ctrl] on Windows &amp; Linux, [&#x2318;] on Mac OS.</li>
+                        <li>Added a modifier key configuration to allow activation while focused in typeable elements: default is alt/option key.</li>
+                        <li>Added ability to allow accesskey activation without pressing control key or modifier key when not focused in 'typeable elements.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>Footnotes</h2>
+            <ul class="footnotes">
+                <li id="footnote_ie8">Display is a bit wonky as IE8 doesn&apos;t grok stacking for :after and :before.</li>
             </ul>
     </div>
 
