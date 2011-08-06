@@ -44,8 +44,8 @@
 <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="jquery.min.js"%3E%3C/script%3E'))</script>
 <script type="text/javascript" src="keyCandy.js"></script>
 <script type="text/javascript"> $(function() {
-    var os_key_map = {'Windows': 'ctrl', 'Linux': 'ctrl', 'Macintosh': '&#x2318;'},
-        keycode_map = {'Windows': 'ctrl', 'Linux': 'ctrl', 'Macintosh': String.fromCharCode(parseInt('2318',16))};
+    var html_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': '&#x2318;'},
+        attr_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': String.fromCharCode(parseInt('2318',16))};
     KeyCandy.init();
     $('a, button, input[type="submit"]').click(function(e) {
         e.preventDefault();
@@ -53,10 +53,9 @@
             _text = ($this.text() == '') ? $this.val() : $this.text();
         $(document.body).append('<p>You clicked: \'' + _text + '\'</p>');
     });
-    $('#controlKey').html(os_key_map[KeyCandy.os]);
-    $(document.body).attr('data-kchint', 'Press [' + keycode_map[KeyCandy.os] + '] to hide tooltips.');
+    $('#controlKey').html(html_key_map[KeyCandy.os]);
+    $(document.body).attr('data-kchint', 'Press [' + attr_key_map[KeyCandy.os] + '] to hide tooltips.');
 });
-
 </script>
 </body>
 </html>
