@@ -8,7 +8,7 @@
  *  MIT license (see http://creativecommons.org/licenses/MIT/). 
  */
 //function e(){ return (typeof exports === 'undefined') ? ((typeof window === 'undefined)?this:window) : exports }
-var $ = __domApi = (function(){
+var gobSmack = (function(){
     var __slice = function(obj) { return Array.prototype.slice.call(obj); },
     __bind = function(obj, func){
         return ('bind' in func && typeof func.bind === "function")
@@ -21,17 +21,34 @@ var $ = __domApi = (function(){
         if (typeof selector === "string") {
             this.el = document.querySelectorAll(selector);
             this.length = this.el.length;
-            if (this.el.length == 1) this.el = __slice(this.el).pop();
+            if (this.el.length == 1) {
+                this.el = __slice(this.el).pop();
+                this[0] = this.el;
+            }
             for (var i=0, elArray = __slice(this.el), len = elArray.length; i<len; i++) {
                 this[i] = elArray[i];
             }
-        } else if (selector.nodeType) {
+        } else if (selector.nodeType || selector === window || selector === document) {
             this.el = this[0] = selector;
+            this.length = 1;
         }
-        console.log("selector was a '%s' and this.el is a '%s'", typeof selector, this.el);
+//
+//        console.log("selector was a '%s' and this.el is a '%s'", typeof selector, this.el);
     }, proto = api.prototype;
     proto.is = function(tag){
-        console.log('tag was "%s" and element is a "%s"', tag, this.el);
+        var _is = false,tagArray;
+//        console.log('tag was "%s" and element is a "%s"', tag, this.el);
+        if (tag.indexOf(',') >= 0) {
+            tagArray = tag.split(/,\s*/g);
+//            console.dir(tagArray);
+            for (var i=0, len=tagArray.length; i<len; i++) {
+//                console.log('tag was "%s" and element is a "%s"', tagArray[i], this.el);
+                if (tagArray[i].toLowerCase() === this.el.tagName.toLowerCase()) return true;
+                if (tagArray[i].indexOf(':') == 0) {
+                    if (tagArray[i].substr(1).toLowerCase() === this.el.type) return true;
+                }
+            }
+        }
         return (tag.toLowerCase() === this.el.tagName.toLowerCase());
     };
     proto.bind = function(type, callback){
@@ -41,6 +58,7 @@ var $ = __domApi = (function(){
             _type = _args[0] = (_adder === el.attachEvent) ? 'on' + type : type,
             _func = _args[1] = __bind(el, callback);
             if (_type.indexOf('on') !== 0) _args.push(true);
+//        console.log('el is a %s and event type is %s', this.el, _type);
         if (this.length === 1) {
             _adder.apply(this.el, _args);
         } else {
@@ -66,7 +84,24 @@ var $ = __domApi = (function(){
         this.el.className = this.el.className.replace(classRE(cls), '');
         return this;
     };
-
+    proto.toggleClass = function(cls) {
+        if (this.hasClass(cls)) {
+            this.removeClass(cls);
+        } else {
+            this.addClass(cls);
+        }
+    };
+    proto.keydown = function(func){
+        this.bind('keydown', func)
+    };
+    proto.click = function(func){
+        this.bind('click', func)
+    };
+    proto.trigger = function(evt){
+        if (evt in this.el) {
+            this.el[evt]();
+        }
+    };
     return __init;
 })();
 KeyCandy = (function($){
@@ -115,12 +150,13 @@ KeyCandy = (function($){
 //                        console.log('Tag: %s, Code: %s', _tag, _code);
                         if (_valid_accesskey_code) {
                             if ($el.length) {
-                                $el = ($el.is('label')) ? $('#' + $el.attr('for')) : $el;
+                                $el = ($el.is('label')) ? $('#' + $el[0].htmlFor) : $el;
                                 var _action = $el.is(':text, :password, textarea, select')?'focus':'click';
-                                if ($el.is('a')) {
-                                    // Ensure the link has an href before changing location
+//                                console.log('action to take is "%s"', _action);
+                                if ($el[0].tagName.toLowerCase() == 'a') {
+                                    // TODO implement one in gobSmack
                                     $el.one('click', function(){ this.href && (location.href = this.href) });
-                                } else if ($el.is('select') && _browser=='gecko' && _tag!='select') {
+                                } else if ($el[0].tagName.toLowerCase() == 'select' && _browser=='gecko' && _tag!='select') {
                                     _old_idx = $el[0].selectedIndex;
                                     (function(){
                                         var _idx = _old_idx, el = $el[0];
@@ -142,4 +178,4 @@ KeyCandy = (function($){
         os: _os,
         browser: _browser
     };
-})(__domApi);
+})(gobSmack);
