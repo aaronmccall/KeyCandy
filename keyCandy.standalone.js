@@ -102,6 +102,28 @@ var gobSmack = (function(){
             this.el[evt]();
         }
     };
+    // TODO need implementations of one and attr
+    proto.one = function(type, func) {
+        //Magical callback wrapper that removes the event listener goes here
+        var handle = __bind(this.el, func),
+            wrapper = __bind(this, function(event){
+                handle(event);
+                this.unbind(type, wrapper);
+            });
+        this.bind(type, wrapper);
+    };
+
+    proto.unbind = document.removeEventListener
+        ? function( type, handle ) {
+            if ( this.el.removeEventListener ) {
+                this.el.removeEventListener( type, handle, false );
+            }
+        }
+        : function( type, handle ) {
+            if ( this.el.detachEvent ) {
+                this.el.detachEvent( "on" + type, handle );
+            }
+        };
     return __init;
 })();
 KeyCandy = (function($){
