@@ -294,6 +294,14 @@ var gobSmack = (function(){
         return this;
     };
 
+    proto.prop = function(name, value){
+        var prop = (propertyFix[name]) ? propertyFix[name] : name;
+        if (prop in this.el) {
+            if (typeof value === undefined ) return this.el[prop];
+            this.el[prop] = value;
+        }
+    };
+
     proto.html = function(html) {
         for (var i=0; i<this.length; i++) {
             this[i].innerHTML = html;
@@ -305,18 +313,20 @@ var gobSmack = (function(){
     return __init;
 })();
 KeyCandy = (function($){
-    var _agent = navigator.userAgent,
-    _os = /Linux|Windows|Macintosh/.exec(_agent).toString().toLowerCase(),
-    _browser = (_agent.indexOf('WebKit')>-1) ? 'webkit' : /Gecko|MSIE|Opera/.exec(_agent).toString().toLowerCase(),
-    _os_browser_map = { macintosh: { webkit: 91, gecko: 224 } },
-    _target,
+    var agent = navigator.userAgent,
+    os = /Linux|Windows|Macintosh/.exec(agent).toString().toLowerCase(),
+    browser = (agent.indexOf('WebKit')>-1) ? 'webkit' : /Gecko|MSIE|Opera/.exec(agent).toString().toLowerCase(),
+    os_browser_map = { macintosh: { webkit: 91, gecko: 224 } },
+    target,
     _class = 'keycandy',
     _remove_class = 'removeClass',
     _default_parent = 'body',
-    _control_key = (_os_browser_map[_os] && _os_browser_map[_os][_browser]) ? _os_browser_map[_os][_browser] : 17,
+    _control_key = (os_browser_map[os] && os_browser_map[os][browser]) ? os_browser_map[os][browser] : 17,
     _req_control_key = false,
     _valid_mod_keys = { alt: 'alt', ctrl: 'ctrl', meta: 'meta', shift: 'shift' },
-    _mod_key = 'alt';
+    _mod_key = 'alt',
+    html_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': '&#x2318;'},
+    attr_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': String.fromCharCode(parseInt('2318',16))};
 
     return {
         version: '1.0RC',
@@ -328,8 +338,8 @@ KeyCandy = (function($){
             opt.reqCtrlKey && (_req_control_key = opt.reqCtrlKey);
             opt.modKey && _valid_mod_keys[opt.modKey] && (_mod_key = opt.modKey);
 
-            _target = opt.parent || _default_parent;
-            $(_browser=='msie' ? document : window).bind('keydown', function(event){
+            target = opt.parent || _default_parent;
+            $(browser=='msie' ? document : window).bind('keydown', function(event){
                 var $class_target = (_target) ? $(_target) : $(_default_parent),
                     _target = event.target,
                     _tag = _target.tagName.toLowerCase(),
@@ -349,11 +359,11 @@ KeyCandy = (function($){
                     if (_accesskey_event && !_typeable) {
                         if (_valid_accesskey_code) {
                             if ($el.length) {
-                                $el = ($el.is('label')) ? $('#' + $el[0].htmlFor) : $el;
+                                $el = ($el.is('label')) ? $('#' + $el.attr('for')) : $el;
                                 var _action = $el.is(':text, :password, textarea, select')?'focus':'click';
                                 if ($el[0].tagName.toLowerCase() == 'a') {
                                     $el.one('click', function(){ this.href && (location.href = this.href) });
-                                } else if ($el[0].tagName.toLowerCase() == 'select' && _browser=='gecko' && _tag!='select') {
+                                } else if ($el[0].tagName.toLowerCase() == 'select' && browser=='gecko' && _tag!='select') {
                                     _old_idx = $el[0].selectedIndex;
                                     (function(){
                                         var _idx = _old_idx, el = $el[0];
@@ -370,10 +380,12 @@ KeyCandy = (function($){
                     }
                 }
             });
-            $(_target).bind('click', function(){ $(this)[_remove_class](_class); });
+            $(target).bind('click', function(){ $(this)[_remove_class](_class); })
+                     .attr('data-kchint', 'Press [' + attr_key_map[KeyCandy.os] + '] to hide tooltips.');
+            $('#controlKey').html(html_key_map[KeyCandy.os]);
         },
-        os: _os,
-        browser: _browser
+        os: os,
+        browser: browser
     };
 })(gobSmack);
 
