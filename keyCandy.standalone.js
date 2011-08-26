@@ -9,40 +9,101 @@
  */
 //function e(){ return (typeof exports === 'undefined') ? ((typeof window === 'undefined)?this:window) : exports }
 var gobSmack = (function(){
+
     var __slice = function(obj) { return Array.prototype.slice.call(obj); },
+
+    __indexOf = function(array, val) {
+        var newFunc =  (typeof Array.prototype.indexOf === "function")
+            ? function(array, val) {
+                return Array.prototype.indexOf.call(array, val);
+            }
+            : function(array, val) {
+                for (var i=0, j=array.length; i<j; i++) {
+                    if (array[i] === val) return i;
+                }
+                return -1;
+            };
+        __indexOf = newFunc;
+        return newFunc(array, val);
+    },
+
     __bind = function(obj, func){
         return ('bind' in func && typeof func.bind === "function")
             ? func.bind(obj)
             : function() { func.apply(obj, __slice(arguments)) }
     },
+
     __init = function(selector) { return new api(selector) },
+
     classRE = function(cls) { return new RegExp("\\b" + cls + "\\b") },
+
+    __el_list = [],
+
+    __el_evt_map = {},
+
+    hasGetAttribute = function() {
+        var div = document.createElement('div');
+        div.innerHTML = '<a href="/example"></a>';
+
+        if (div.childNodes[0].getAttribute('href') === '/example') {
+            hasGetAttribute = function() { return true };
+            return true;
+        }
+
+        // Helps IE release memory associated with the div
+        div = null;
+        hasGetAttribute = function() { return false };
+        return false;
+    },
+
+    propertyFix = {
+        tabindex:        'tabIndex',
+        readonly:        'readOnly',
+        'for':           'htmlFor',
+        'class':         'className',
+        maxlength:       'maxLength',
+        cellspacing:     'cellSpacing',
+        cellpadding:     'cellPadding',
+        rowspan:         'rowSpan',
+        colspan:         'colSpan',
+        usemap:          'useMap',
+        frameborder:     'frameBorder',
+        contenteditable: 'contentEditable'
+    },
+    
+    getAttributeParamFix = {
+        width: true,
+        height: true,
+        src: true,
+        href: true
+    },
+
     api = function(selector){
         if (typeof selector === "string") {
             this.el = document.querySelectorAll(selector);
             this.length = this.el.length;
             if (this.el.length == 1) {
-                this.el = __slice(this.el).pop();
-                this[0] = this.el;
-            }
-            for (var i=0, elArray = __slice(this.el), len = elArray.length; i<len; i++) {
-                this[i] = elArray[i];
+                this[0] = this.el = __slice(this.el).pop();
+            } else {
+                for (var i=0, elArray = __slice(this.el), len = elArray.length; i<len; i++) {
+                    if (i===0) this.el = elArray[i];
+                    this[i] = elArray[i];
+                }
             }
         } else if (selector.nodeType || selector === window || selector === document) {
             this.el = this[0] = selector;
             this.length = 1;
         }
 //
-//        console.log("selector was a '%s' and this.el is a '%s'", typeof selector, this.el);
-    }, proto = api.prototype;
+    },
+
+    proto = api.prototype;
+
     proto.is = function(tag){
         var _is = false,tagArray;
-//        console.log('tag was "%s" and element is a "%s"', tag, this.el);
         if (tag.indexOf(',') >= 0) {
             tagArray = tag.split(/,\s*/g);
-//            console.dir(tagArray);
             for (var i=0, len=tagArray.length; i<len; i++) {
-//                console.log('tag was "%s" and element is a "%s"', tagArray[i], this.el);
                 if (tagArray[i].toLowerCase() === this.el.tagName.toLowerCase()) return true;
                 if (tagArray[i].indexOf(':') == 0) {
                     if (tagArray[i].substr(1).toLowerCase() === this.el.type) return true;
@@ -51,79 +112,196 @@ var gobSmack = (function(){
         }
         return (tag.toLowerCase() === this.el.tagName.toLowerCase());
     };
+
+    function bind(el, type, callback) {
+        var newFunc = el.addEventListener
+            ? function (el, type, callback) {
+                el.addEventListener(type, callback, true);
+            }
+            : function (el, type, callback) {
+                el.attachEvent('on'+type, callback);
+            };
+
+        bind = newFunc;
+        return newFunc(el, type, callback);
+    }
+
     proto.bind = function(type, callback){
-        var el = this.el,
-            _adder = (this._adder || (this._adder = (el.addEventListener ? el.addEventListener : el.attachEvent), this._adder)),
-            _args = [],
-            _type = _args[0] = (_adder === el.attachEvent) ? 'on' + type : type,
-            _func = _args[1] = __bind(el, callback);
-            if (_type.indexOf('on') !== 0) _args.push(true);
-//        console.log('el is a %s and event type is %s', this.el, _type);
-        if (this.length === 1) {
-            _adder.apply(this.el, _args);
-        } else {
-            for (var i=0; i<this.length; i++) {
-                _adder.apply(this[i], args);
+        var elKey;
+        for (var i=0; i<this.length; i++) {
+            if (__indexOf(__el_list, this[i]) < 0) __el_list.push(this[i]);
+            elKey = __indexOf(__el_list, this[i]);
+            __el_evt_map[elKey] = __el_evt_map[elKey] || {};
+            __el_evt_map[elKey][type] = __el_evt_map[elKey][type] || [];
+            if (__indexOf(__el_evt_map[elKey][type], callback) < 0) {
+                bind(this[i], type, callback);
+                __el_evt_map[elKey][type].push(callback);
             }
         }
         return this;
     };
-    proto.hasClass = function(cls) {
-        return this.el.className.indexOf(cls) > -1;
-    };
-    proto.addClass = function(cls) {
+
+    function hasClass(el, cls) { return classRE(cls).test(el.className); }
+
+    proto.hasClass = function(cls) { return hasClass(this.el, cls) };
+
+    function addClass(el, cls) {
         var classList;
-        //TODO make this grok element list
-        if (!classRE(cls).test(this.el.className)) {
-            classList = this.el.className.split(/\s+/g);
-            this.el.className += ' ' + cls;
+        if (!hasClass(el, cls)) {
+            classList = el.className.split(/\s+/g);
+            classList.push(cls);
+            el.className = classList.join(' ');
         }
+    }
+
+    proto.addClass = function(cls){
+        for (var i=0; i<this.length; i++) addClass(this[i], cls);
         return this;
     };
+
+    function removeClass(el, cls) {
+        el.className = el.className.replace(classRE(cls), '').replace(/^\s+/, '');
+    }
+
     proto.removeClass = function(cls) {
-        this.el.className = this.el.className.replace(classRE(cls), '');
+        for (var i=0; i<this.length; i++) removeClass(this[i], cls);
         return this;
     };
-    proto.toggleClass = function(cls) {
-        if (this.hasClass(cls)) {
-            this.removeClass(cls);
+
+    function toggleClass(el, cls) {
+        if (hasClass(el, cls)) {
+            removeClass(el, cls);
         } else {
-            this.addClass(cls);
+            addClass(el, cls);
         }
+    }
+
+    proto.toggleClass = function(cls) {
+        for (var i=0; i<this.length; i++) toggleClass(this[i], cls);
+        return this;
     };
-    proto.keydown = function(func){
-        this.bind('keydown', func)
+
+    function trigger(el, evt){
+        if (evt in el) el[evt]();
+        return this;
+    }
+
+    proto.trigger = function(evt) {
+        for (var i=0; i<this.length; i++) trigger(this[i], evt);
+        return this;
     };
-    proto.click = function(func){
-        this.bind('click', func)
-    };
-    proto.trigger = function(evt){
-        if (evt in this.el) {
-            this.el[evt]();
-        }
-    };
-    // TODO need implementations of one and attr
+
     proto.one = function(type, func) {
-        //Magical callback wrapper that removes the event listener goes here
         var handle = __bind(this.el, func),
             wrapper = __bind(this, function(event){
                 handle(event);
                 this.unbind(type, wrapper);
             });
         this.bind(type, wrapper);
+        return this;
     };
 
-    proto.unbind = document.removeEventListener
-        ? function( type, handle ) {
-            if ( this.el.removeEventListener ) {
-                this.el.removeEventListener( type, handle, false );
+    function unbind(el, type, handle) {
+        var newFunc = document.removeEventListener
+            ? function( el, type, handle ) {
+            if ( el.removeEventListener ) el.removeEventListener( type, handle, false );
+        }
+            : function( el, type, handle ) {
+            if ( el.detachEvent ) el.detachEvent( "on" + type, handle );
+        };
+        unbind = newFunc;
+        newFunc(el, type, handle);
+    }
+
+    proto.unbind = function(type, handle) {
+        for (var i=0; i<this.length; i++) unbind(this[i], type, handle);
+        return this;
+    };
+
+    function setAttr(el, attr, val) {
+//        console.log('initializing setAttr');
+        var newFunc = hasGetAttribute()
+            ? function (el, attr, val) {
+//                console.log('setting %s to %s', attr, val);
+                return el.setAttribute(attr, val);
+            }
+            : function (el, attr, val) {
+                if (propertyFix[name]) {
+                    name = propertyFix[name];
+                }
+
+                if (name === 'value' && element.nodeName === 'BUTTON') {
+                    return element.getAttributeNode(name).nodeValue = value;
+                }
+
+                return element.setAttribute(name, value);
+            };
+        setAttr = newFunc;
+        return newFunc(el, attr, val);
+    }
+
+    function getAttr(el, attr) {
+        var newFunc = hasGetAttribute()
+            ? function (el, attr) {
+                el.getAttribute(attr);
+            }
+            : function (el, attr) {
+                if (propertyFix[attr]) {
+                    attr = propertyFix[attr];
+                }
+
+                if (getAttributeParamFix[attr]) {
+                    return el.getAttribute(attr, 2);
+                }
+
+                if (attr === 'value' && el.nodeName === 'BUTTON') {
+                  return el.getAttributeNode(attr).nodeValue;
+                }
+
+                return el.getAttribute(attr);
+            };
+        getAttr = newFunc;
+        return newFunc(el, attr);
+    }
+
+    function removeAttr(el, attr) {
+        var newFunc = hasGetAttribute()
+            ? function (el, attr) {
+                if ('1-9'.indexOf(''+el.nodeType) < 0) return;
+                setAttr(el, attr, '');
+                el.removeAttributeNode(el.getAttributeNode(attr));
+            }
+            : function (el, attr) {
+                el.removeAttribute(attr);
+            };
+        removeAttr = newFunc;
+        return newFunc(el, attr);
+    }
+
+    proto.attr = function(name, value){
+//        console.log('running $.attr to set attribute "%s" to value "%s" on %s elements', name, value, this.length);
+        if (typeof value === undefined) return getAttr(this.el, name) ;
+
+        for (var i=0; i<this.length; i++) {
+            if (value === null) {
+//                console.log('removing %s', name);
+                removeAttr(this[i], name);
+            } else {
+//                console.log('setting %s to %s', name, value);
+                setAttr(this[i], name, value);
             }
         }
-        : function( type, handle ) {
-            if ( this.el.detachEvent ) {
-                this.el.detachEvent( "on" + type, handle );
-            }
-        };
+        return this;
+    };
+
+    proto.html = function(html) {
+        for (var i=0; i<this.length; i++) {
+            this[i].innerHTML = html;
+        }
+        return this;
+    };
+
+    //Expose our initializer function as the public gobSmack or $ function.
     return __init;
 })();
 KeyCandy = (function($){
@@ -151,7 +329,7 @@ KeyCandy = (function($){
             opt.modKey && _valid_mod_keys[opt.modKey] && (_mod_key = opt.modKey);
 
             _target = opt.parent || _default_parent;
-            $(_browser=='msie' ? document : window).keydown(function(event){
+            $(_browser=='msie' ? document : window).bind('keydown', function(event){
                 var $class_target = (_target) ? $(_target) : $(_default_parent),
                     _target = event.target,
                     _tag = _target.tagName.toLowerCase(),
@@ -169,14 +347,11 @@ KeyCandy = (function($){
                     $class_target.toggleClass(_class);
                 } else {
                     if (_accesskey_event && !_typeable) {
-//                        console.log('Tag: %s, Code: %s', _tag, _code);
                         if (_valid_accesskey_code) {
                             if ($el.length) {
                                 $el = ($el.is('label')) ? $('#' + $el[0].htmlFor) : $el;
                                 var _action = $el.is(':text, :password, textarea, select')?'focus':'click';
-//                                console.log('action to take is "%s"', _action);
                                 if ($el[0].tagName.toLowerCase() == 'a') {
-                                    // TODO implement one in gobSmack
                                     $el.one('click', function(){ this.href && (location.href = this.href) });
                                 } else if ($el[0].tagName.toLowerCase() == 'select' && _browser=='gecko' && _tag!='select') {
                                     _old_idx = $el[0].selectedIndex;
@@ -195,9 +370,11 @@ KeyCandy = (function($){
                     }
                 }
             });
-            $(_target).click(function(){ $(this)[_remove_class](_class); });
+            $(_target).bind('click', function(){ $(this)[_remove_class](_class); });
         },
         os: _os,
         browser: _browser
     };
 })(gobSmack);
+
+var $ = gobSmack;
