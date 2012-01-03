@@ -5,7 +5,7 @@
 	vertical-align:middle;
 	color:#333;
 	text-align:center;
-	border:1px solid #ccc;
+	border:1px solid #888;
 	-moz-border-radius:8px;
 	-webkit-border-radius:8px;
 	border-radius:8px;
@@ -15,14 +15,15 @@
 	text-decoration:none !important;
 	text-indent: 0 !important;
 	z-index:999;
-    opacity: 0.7;
-    -moz-opacity: 0.7;
-    -webkit-opacity: 0.7;
+    opacity: 0.9;
+    -moz-opacity: 0.9;
+    -webkit-opacity: 0.9;
 }
 
 .keycandy:before {
 	top:2px;
 	content: attr(data-kchint);
+    padding:  0 .25em;
 }
 
 .keycandy *[accesskey] {
