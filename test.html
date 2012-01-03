@@ -16,17 +16,20 @@
     <p>Press [<span id="controlKey"></span>] to make the accesskey tooltips appear. Then press one to see what happens</p>
 
     <p>
-        <a href="#" accesskey="A">A Link</a>
+        <a id="hash_link" href="#" accesskey="A">A Link</a>
     </p>
 
     <p>
-        <a href="http://google.com" accesskey="G">A Link to Google</a>
+        <a id="google_link" href="http://google.com" accesskey="G">A Link to Google</a>
     </p>
 
     <p>
-        <button accesskey="B">A Button</button>
+        <button id="the_button" type="button" accesskey="B">A Button</button>
     </p>
-    <p><label accesskey="C" for="text_input">A text input</label><input id="text_input" name="text_input" type="text"/></p>
+    <p>
+        <label accesskey="C" for="text_input">A text input</label>
+        <input id="text_input" name="text_input" type="text"/>
+    </p>
 
     <p><label accesskey="H" for="check_it">A Checkbox: <input id="check_it" type="checkbox"/></label></p>
 
@@ -41,26 +44,17 @@
         </select>
     </p>
 </form>
-<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>-->
-<!--<script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="jquery.min.js"%3E%3C/script%3E'))</script>-->
-<script type="text/javascript" src="keyCandy.standalone.js"></script>
-<script type="text/javascript">/* $(function() {
-    var html_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': '&#x2318;'},
-        attr_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': String.fromCharCode(parseInt('2318',16))};*/
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="jquery.min.js"%3E%3C/script%3E'))</script>
+<script type="text/javascript" src="keyCandy.js"></script>
+<!--<script type="text/javascript" src="keyCandy.standalone.js"></script>-->
+<script type="text/javascript">
+
     KeyCandy.init();
-    /*$('a, button, input[type="submit"]').click(function(e) {
+    $('#hash_link, button, input[type="submit"]').bind('click', function(e) {
+        console && console.log && console.log('You clicked: \'%s\' with ID \'%s\'', this.tagName, $(this).attr('id'));
         e.preventDefault();
-        var $this = $(this),
-            _text = ($this.text() == '') ? $this.val() : $this.text();
-        $(document.body).append('<p>You clicked: \'' + _text + '\'</p>');
-    });*/
-//    console = console||{};
-//    if (!console.log) {
-//        console.log = function(){ $(document.body).append('<p>' + Array.prototype.slice.call(arguments).join('<br>') + '</p>')};
-//    }
-//    $('#controlKey').html(html_key_map[KeyCandy.os]);
-//    $(document.body).attr('data-kchint', 'Press [' + attr_key_map[KeyCandy.os] + '] to hide tooltips.');
-//});
+    });
 </script>
 </body>
 </html>
