@@ -12,50 +12,51 @@
 </head>
 <body data-kchint="">
 <h1>Key Candy Demo Page</h1>
+<form>
+    <p>Press the Command key on Mac Os or the CTRL key on Windows or Linux to
+        make the accesskey tooltips appear. Then press one to see what happens</p>
 
-<p>Press [<span id="controlKey"></span>] to make the accesskey tooltips appear. Then press one to see what happens</p>
+    <p>
+        <a id="hash_link" href="#" accesskey="A">A Link</a>
+    </p>
 
-<p>
-    <a href="#" accesskey="A">A Link</a>
-</p>
+    <p>
+        <a id="google_link" href="http://google.com" accesskey="G">A Link to Google</a>
+    </p>
 
-<p>
-    <a href="http://google.com" accesskey="G">A Link to Google</a>
-</p>
+    <p>
+        <button id="the_button" type="button" accesskey="B">A Button</button>
+    </p>
+    <p>
+        <label accesskey="C" for="text_input">A text input</label>
+        <input id="text_input" name="text_input" type="text"/>
+    </p>
 
-<p>
-    <button accesskey="B">A Button</button>
-</p>
-<p><label accesskey="C" for="text_input">A text input</label><input id="text_input" name="text_input" type="text"/></p>
+    <p><label accesskey="H" for="check_it">A Checkbox: <input id="check_it" type="checkbox"/></label></p>
 
-<p><label accesskey="H" for="check_it">A Checkbox: <input id="check_it" type="checkbox"/></label></p>
+    <p><label for="comment" accesskey="T">A Textarea</label><textarea id="comment" name="textarea_comment"></textarea></p>
 
-<p><label for="comment" accesskey="T">A Textarea</label><textarea id="comment"></textarea></p>
+    <p><label for="submit" accesskey="U">A Submit Input</label><input type="submit" id="submit" value="Submit"/></p>
 
-<p><label for="submit" accesskey="U">A Submit Input</label><input type="submit" id="submit" value="Submit"/></p>
-
-<p><label for="choices" accesskey="S">Choose one: </label>
-    <select id="choices">
-        <option>First</option>
-        <option>Second</option>
-    </select>
-</p>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-<script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="jquery.min.js"%3E%3C/script%3E'))</script>
-<script type="text/javascript" src="keyCandy.js"></script>
-<script type="text/javascript"> $(function() {
-    var html_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': '&#x2318;'},
-        attr_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': String.fromCharCode(parseInt('2318',16))};
-    KeyCandy.init();
-    $('a, button, input[type="submit"]').click(function(e) {
+    <p><label for="choices" accesskey="S">Choose one: </label>
+        <select id="choices" name="select_choices">
+            <option>First</option>
+            <option>Second</option>
+        </select>
+    </p>
+</form>
+<script type="text/javascript" src="keyCandy.standalone.min.js"></script>
+<script type="text/javascript">
+ (function($){
+    var click_handler = function(e) {
+        alert('You clicked an \'' + this.tagName + '\' with ID \'' + $(this).attr('id'));
         e.preventDefault();
-        var $this = $(this),
-            _text = ($this.text() == '') ? $this.val() : $this.text();
-        $(document.body).append('<p>You clicked: \'' + _text + '\'</p>');
-    });
-    $('#controlKey').html(html_key_map[KeyCandy.os]);
-    $(document.body).attr('data-kchint', 'Press [' + attr_key_map[KeyCandy.os] + '] to hide tooltips.');
-});
+    };
+    KeyCandy.init();
+    $('#hash_link').bind('click', click_handler);
+    $('input[type="submit"]').bind('click', click_handler);
+    $('button').bind('click', click_handler);
+ })(gobSmack);
 </script>
 </body>
 </html>
