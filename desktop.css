@@ -142,3 +142,7 @@ hr {
 	width: 79px;
 	margin-top: 0;
 }
+
+.footnotes li:target {
+    background-color: #ff9;
+}
