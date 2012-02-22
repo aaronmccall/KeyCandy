@@ -421,7 +421,7 @@ KeyCandy = (function($){
     };
 
     return {
-        version: '1.0RC',
+        version: '1.0',
         init: function(opt){
             opt || (opt = {});
 

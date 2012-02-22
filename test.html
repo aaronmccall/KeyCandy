@@ -45,17 +45,18 @@
         </select>
     </p>
 </form>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-<script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="jquery.min.js"%3E%3C/script%3E'))</script>
-<!--<script type="text/javascript" src="keyCandy.js"></script>-->
-<script type="text/javascript" src="keyCandy.standalone.js"></script>
+<script type="text/javascript" src="keyCandy.standalone.min.js"></script>
 <script type="text/javascript">
-
-    KeyCandy.init();
-    $('#hash_link, button, input[type="submit"]').bind('click', function(e) {
-        console && console.log && console.log('You clicked: \'%s\' with ID \'%s\'', this.tagName, $(this).attr('id'));
+ (function($){
+    var click_handler = function(e) {
+        alert('You clicked an \'' + this.tagName + '\' with ID \'' + $(this).attr('id'));
         e.preventDefault();
-    });
+    };
+    KeyCandy.init();
+    $('#hash_link').bind('click', click_handler);
+    $('input[type="submit"]').bind('click', click_handler);
+    $('button').bind('click', click_handler);
+ })(gobSmack);
 </script>
 </body>
 </html>
