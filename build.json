@@ -5,7 +5,6 @@
 	"ext": "ext",
 	"lint": {},
 	"uglify": {},
-	"gzip": {},
 	"hosts": {
 		"/": "html"
 	}
