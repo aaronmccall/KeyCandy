@@ -141,4 +141,4 @@ KeyCandy = (function($, undefined){
         os: os,
         browser: browser
     };
-})(window.jQuery);
+})(windows.KEYCANDY_DOM_LIB || window.$);
