@@ -44,6 +44,7 @@
             for (var i = 0, len = array.length; i<len; i++) {
                 if (i in array && callback.call(context, array[i], i, array)===breaker) return;
             }
+        };
         __each = newFunc;
         return newFunc(array, callback, context);
     }
@@ -75,6 +76,6 @@
         return (func.bind) ? func.bind(obj) : function() { func.apply(obj, __slice(arguments)); }
     }
 
-    function classRE(cls) { 
-        return new RegExp("\\b" + cls + "\\b") 
-    }
+    function __lc(string) { return (''+string).toLowerCase(); }
+
+    function classRE(cls) { return new RegExp("\\b" + cls + "\\b") }
