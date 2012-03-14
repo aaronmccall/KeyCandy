@@ -77,7 +77,9 @@ var DOMSmack = (function () {
 
     };
 
+    //import("DOMSmack/events.js")
 
+    //import("DOMSmack/attributes.js")
 
     proto.html = function(html) {
         for (var i=0; i<this.length; i++) {
