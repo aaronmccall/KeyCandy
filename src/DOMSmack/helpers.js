@@ -1,5 +1,9 @@
-    // DOMSmack helpers
+// DOMSmack helpers
+    // source: src/DOMSmack/helpers.js
 
+    // Get a shorter handle to Array's prototype (helps with minification too)
+    var ArrProto = Array.prototype,
+        breaker = {};
 
 
     function __slice(obj) { 
