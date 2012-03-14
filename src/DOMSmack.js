@@ -14,22 +14,23 @@ var DOMSmack = (function(){
     __el_evt_map = {};
 
      function api(selector){
+    function Api(selector){
         if (typeof selector === "string") {
-            this.els = document.querySelectorAll(selector);
+            this.els = __slice(document.querySelectorAll(selector));
             this.length = this.els.length;
-            if (this.el.length == 1) {
-                this[0] = this.el = __slice(this.els).pop();
+            if (this.els.length == 1) {
+                this[0] = this.el = this.els[0];
             } else {
-                for (var i=0, elArray = __slice(this.els), len = elArray.length; i<len; i++) {
-                    if (i===0) this.el = elArray[i];
-                    this[i] = elArray[i];
-                }
+                __each(this.els, function (el, idx) {
+                    this[idx] = el;
+                }, this);
             }
         } else if (selector.nodeType || selector === window || selector === document) {
+            this.els = [selector];
             this.el = this[0] = selector;
             this.length = 1;
         }
-    },
+    }
 
     proto = api.prototype;
 
