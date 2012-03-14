@@ -37,10 +37,11 @@ var DOMSmack = (function () {
         }
     }
 
-    proto = api.prototype;
+    var proto = Api.prototype;
 
+    // Having an integer `length` property and a `splice` method makes
+    // Api an [Array-like object](http://cl.ly/3k0i3n0A2R2h2t303B0x)
     proto.length = 0;
-
     proto.splice = [].splice;
 
     // ## is ##
