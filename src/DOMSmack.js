@@ -81,7 +81,7 @@ var DOMSmack = (function () {
 
     //import("DOMSmack/attributes.js")
 
-    proto.html = function(html) {
+    proto.html = function (html) {
         for (var i=0; i<this.length; i++) {
             this[i].innerHTML = html;
         }
@@ -89,8 +89,8 @@ var DOMSmack = (function () {
     };
 
 
-    __init = function(selector) { 
-        return new api(selector) 
+    function __init(selector) { 
+        return new Api(selector);
     }
 
     //Expose our initializer function as the public DOMSmack or $ function.
