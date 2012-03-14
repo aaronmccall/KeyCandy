@@ -28,18 +28,39 @@
         return newFunc(array, callback, context);
     }
 
-    function __slice(obj) { 
-        return Array.prototype.slice.call(obj); 
+    // ## __each ##
+    // Array.forEach-like functionality provided either by the native method
+    // itself or a for-based fallback.
+    // ### Args:
+    // `array {Array}`: the array we are operating on
+    // `callback {Function}`: the function to call on each member of `array`
+    // `context {Object}`: the [optional] `this` object for `callback`
+    function __each(array, callback, context) {
+        var newFunc = (typeof ArrProto.forEach == "function") ?
+        function (array, callback, context) {
+            ArrProto.forEach.call(array, callback, context);
+        } :
+        function (array, callback, context) {
+            for (var i = 0, len = array.length; i<len; i++) {
+                if (i in array && callback.call(context, array[i], i, array)===breaker) return;
+            }
+        __each = newFunc;
+        return newFunc(array, callback, context);
     }
 
+    // ## __indexOf ##
+    // Array.indexOf-like functionality provided either by the native method
+    // itself or a for-based fallback.
+    // ### Args:
+    // `array {Array}`: the array we are operating on
+    // `val {multiple}`: value (any type is allowed) to look for in `array`
     function __indexOf (array, val) {
-        var newFunc =  (typeof Array.prototype.indexOf === "function") ?
+        var newFunc = (typeof ArrProto.indexOf === "function") ?
             function(array, val) {
-                return Array.prototype.indexOf.call(array, val);
+                return ArrProto.indexOf.call(array, val);
             } :
             function(array, val) {
-                var i=0, j=array.length;
-                for (; i<j; i++) {
+                for (var i=0, j=array.length; i<j; i++) {
                     if (array[i] === val) return i;
                 }
                 return -1;
@@ -48,26 +69,10 @@
         return newFunc(array, val);
     }
 
-    function __each(array, callback, context) {
-        var newFunc = (typeof Array.prototype.forEach == "function") ?
-        function (array, callback, context) {
-            Array.prototype.foreEach.call(array, callback, context);
-        } :
-        function (array, callback, context) {
-            if (!array || !array.length) return;
-            var i = 0, len = array.length;
-            for (i<len; i++) {
-                if (array[i] !== undefined) callback.call(context||null, array[i], i, array);
-            }
-        }
-        __each = newFunc;
-        return newFunc(array, callback, context);
-    }
+    function __slice(obj) { return ArrProto.slice.call(obj); }
 
-    function __bind(obj, func) {
-        return ('bind' in func && typeof func.bind === "function")
-            ? func.bind(obj)
-            : function() { func.apply(obj, __slice(arguments)) }
+    function __bind(obj, func) { 
+        return (func.bind) ? func.bind(obj) : function() { func.apply(obj, __slice(arguments)); }
     }
 
     function classRE(cls) { 
