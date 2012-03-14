@@ -2,10 +2,15 @@
 
 // A lightweight, minimalist set of DOM and event tools that was
 // created to replace jQuery in KeyCandy's standalone version.
+//
 // Many concepts/approaches here borrowed from [jQuery](http://jquery.com), 
 // [Zepto](http://zeptojs.com) and DailyJS's 
 // [Let's Make a Framework](http://dailyjs.com/tags.html#lmaf)
-var DOMSmack = (function(){
+//
+// The [Javascript Russian Doll](http://cl.ly/32401n1d3M2A3g2K410c) concept
+// is also heavily used throughout to provide optimized functions/methods 
+// for the current environment.
+var DOMSmack = (function () {
 
     //import("DOMSmack/helpers.js");
 
