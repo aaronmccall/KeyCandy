@@ -71,6 +71,9 @@ var DOMSmack = (function () {
     proto.is = function (tag){
         if (this.length === 1) return is(this.el, tag);
 
+        return __any(this.els, function (el) {
+            if (is(el, tag)) isit = true;
+        }, this);
 
     };
 
