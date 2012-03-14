@@ -45,29 +45,32 @@ var DOMSmack = (function () {
     proto.splice = [].splice;
 
     // ## is ##
-    // Returns true if `el` (see `api` above) has a tagName matching one of the 
+    // Returns true if `el` (see `Api` above) has a tagName matching one of the 
     // tags (or the tag if only one) or having a type matching the passed in 
     // type pseudo-tag (eg, ':text')
     // ### Args:
-    // * `el {DOMElement}`: the element to test against `tag`
-    // * `tag {String}`: the tag, pseudo-tag or comma-separated list of 
-    //    tags/pseudo-tags to test against
+    //  * `el {DOMElement}`: the element to test against `tag`
+    //  * `tag {String}`: the tag, pseudo-tag or comma-separated list of 
+    //     tags/pseudo-tags to test against
     function is(el, tag) {
         var _is = false,
+            _elTag = __lc(el.tagName),
+            _lTag = __lc(tag),
             tagArray;
-        if (tag.indexOf(',') >= 0) {
-            tagArray = tag.split(/,\s*/g);
+        if (~tag.indexOf(',')) {
+            tagArray = _lTag.split(/,\s*/g);
             for (var i=0, len=tagArray.length; i<len; i++) {
-                if (tagArray[i].toLowerCase() === el.tagName.toLowerCase()) return true;
-                if (tagArray[i].indexOf(':') == 0) {
-                    if (tagArray[i].substr(1).toLowerCase() === el.type) return true;
+                if (tagArray[i] === _elTag) return true;
+                if (tagArray[i].indexOf(':') === 0) {
+                    if (tagArray[i].substr(1) === __lc(el.type)) return true;
                 }
             }
         }
-        return (tag.toLowerCase() === el.tagName.toLowerCase());
+        return (_lTag === _elTag);
     }
 
-    proto.is = function(tag){
+    proto.is = function (tag){
+        if (this.length === 1) return is(this.el, tag);
 
     };
 
