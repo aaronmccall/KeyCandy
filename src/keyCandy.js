@@ -29,8 +29,8 @@ KeyCandy = (function($, undefined){
     attr_key_map = {'windows': 'ctrl', 'linux': 'ctrl', 'macintosh': String.fromCharCode(parseInt('2318',16))},
     // Handler for keydown events: sets active modifier keys and triggers appropriate events for accesskey'd elements
     handle_keydown = function(event){
-        var $class_target = (_target) ? $(_target) : $(_default_parent),
-            _target = event.target,
+        var _target = event.target,
+            $class_target = $(target||_default_parent),
             _tag = _target.tagName.toLowerCase(),
             $target = $(_target),
             _code = event.keyCode,
@@ -141,4 +141,4 @@ KeyCandy = (function($, undefined){
         os: os,
         browser: browser
     };
-})(windows.KEYCANDY_DOM_LIB || window.$);
+})(window.KEYCANDY_DOM_LIB || window.$);
