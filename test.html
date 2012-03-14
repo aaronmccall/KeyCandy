@@ -45,7 +45,7 @@
         </select>
     </p>
 </form>
-<script type="text/javascript" src="keyCandy.standalone.min.js"></script>
+<script type="text/javascript" src="lib/keyCandy.standalone.js"></script>
 <script type="text/javascript">
  (function($){
     var click_handler = function(e) {
@@ -56,7 +56,7 @@
     $('#hash_link').bind('click', click_handler);
     $('input[type="submit"]').bind('click', click_handler);
     $('button').bind('click', click_handler);
- })(gobSmack);
+ })(KEYCANDY_DOM_LIB);
 </script>
 </body>
 </html>
