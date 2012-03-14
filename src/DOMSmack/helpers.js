@@ -1,28 +1,6 @@
     // DOMSmack helpers
 
-    // Map HTML attribute names to DOM property names
-    var propertyFix = {
-        tabindex:        'tabIndex',
-        readonly:        'readOnly',
-        'for':           'htmlFor',
-        'class':         'className',
-        maxlength:       'maxLength',
-        cellspacing:     'cellSpacing',
-        cellpadding:     'cellPadding',
-        rowspan:         'rowSpan',
-        colspan:         'colSpan',
-        usemap:          'useMap',
-        frameborder:     'frameBorder',
-        contenteditable: 'contentEditable'
-    },
-    
 
-    getAttributeParamFix = {
-        width: true,
-        height: true,
-        src: true,
-        href: true
-    };
 
     function __slice(obj) { 
         return Array.prototype.slice.call(obj); 
