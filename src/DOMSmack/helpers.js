@@ -70,12 +70,28 @@
         return newFunc(array, val);
     }
 
-    function __slice(obj) { return ArrProto.slice.call(obj); }
+    // ## __slice ##
+    // Quick and dirty wrapper around [].slice that allows
+    // us to convert Array-like objects into actual Arrays
+    // ### Args:
+    // * _obj {multiple}_: can be a String, Object or Array
+    // * _start {Integer}_: optional start index (0-based)
+    // * _stop {Integer}_: optional stop index (defaults to end)
+    function __slice(obj, start, stop) { return ArrProto.slice.call(obj, start, stop); }
 
+    // ## __bind ##
+    // Shim for ES5 Function.bind
+    // ### Args:
+    // * _obj {Object}_: the _this_ context to bind to _func_
+    // * _func {Function}_: the function to bind the context to
     function __bind(obj, func) { 
         return (func.bind) ? func.bind(obj) : function() { func.apply(obj, __slice(arguments)); }
     }
 
+    // ## __LC ##
+    // Shortcut for String.toLowerCase
     function __lc(string) { return (''+string).toLowerCase(); }
 
+    // ## classRE ##
+    // Simple className matcher builder
     function classRE(cls) { return new RegExp("\\b" + cls + "\\b") }
