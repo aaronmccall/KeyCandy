@@ -20,13 +20,17 @@
     // Old IE versions require an additional parameter to getAttribute
     getAttributeParamFix = { width: 1, height: 1, src: 1, href: 1 };
 
-
+    // ## hasGetAttribute ##
+    // Determines whether the current environment supports proper getAttribute 
+    // DOM method. Rewrites itself on first call to simply return true or false
+    // based on the results of the initial test.
     function hasGetAttribute() {
-        var div = document.createElement('div'), newFunc;
+        var div = document.createElement('div'), newFunc, hasGetAttr;
         div.innerHTML = '<a href="#"></a>';
 
         if (div.childNodes[0].getAttribute('href') === '#') {
             newFunc = function() { return true; };
+            hasGetAttribute = newFunc;
             return true;
         }
 
@@ -37,6 +41,14 @@
         return false;
     }
 
+    // ## setAttr ##
+    // Sets attribute _attr_ to value _val_ on element _el_
+    // Rewrites itself to an optimized code path depending on browser's support
+    // for standard DOM methods
+    // ### Args:
+    // * _el {DOM Element}_: the element to set an attribute value on
+    // * _attr {String}_: the attribute name
+    // * _val {String}_: the value to assign to the attribute
     function setAttr(el, attr, val) {
         var newFunc = hasGetAttribute() ? 
             function (el, attr, val) {
@@ -55,6 +67,11 @@
         return newFunc(el, attr, val);
     }
 
+    // ## getAttr ##
+    // Retrieves the current value of attribute _attr_ on element _el_
+    // ### Args:
+    // * _el {DOM Element}_: the element to get the attribute value from
+    // * _attr {String}_: the attribute name
     function getAttr(el, attr) {
         // Build a customized attribute getter for the current browser.
         var newFunc = hasGetAttribute() ?
@@ -82,6 +99,11 @@
         return newFunc(el, attr);
     }
 
+    // ## removeAttr ##
+    // Removes an attribute from an element
+    // ### Args:
+    // * _el {DOM Element}_: the element to remove the attribute from
+    // * _attr {String}_: the attribute name
     function removeAttr(el, attr) {
         var newFunc = hasGetAttribute() ? 
             function (el, attr) {
@@ -96,17 +118,22 @@
         return newFunc(el, attr);
     }
 
+    // ## Api.prototype.attr ##
+    // A simplified clone of jQuery's $().attr()
     proto.attr = function (name, value) {
+        // If called with only one arg, return the attribute value
         if (value === undefined) return getAttr(this.el, name) ;
 
         __each(this.els, function (el) {
             if (value === null) {
+                // Otherwise, if _value_ is explicitly null, remove the attribute.
                 removeAttr(el, name);
             } else {
+                // If not, set it to the new value.
                 setAttr(el, name, value);
             }
         });
-
+        // Chainify!
         return this;
     };
 
@@ -119,7 +146,10 @@
         if (this.length ===1) return hasClass(this.el, cls); 
         var has_class = false;
         __each(this.els, function (el) {
-            if (hasClass(el, cls)) has_class = true;
+            if (hasClass(el, cls)) {
+                has_class = true;
+                return breaker;
+            }
         }, this);
         return has_class;
     };
