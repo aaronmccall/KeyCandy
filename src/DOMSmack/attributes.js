@@ -137,6 +137,22 @@
         return this;
     };
 
+    function prop(el, name, value) {
+        var prop = (propertyFix[name]) ? propertyFix[name] : name;
+        if (prop in el) {
+            if (typeof value === undefined ) return el[prop];
+            el[prop] = value;
+            return this;
+        }
+    };
+
+
+    proto.prop = function (name, value) {
+        if (value === undefined) return prop(this.els[0], name);
+        return __each(this.els, function (el) { prop(el, name, value); }, this);
+
+    };
+
 
     function hasClass(el, cls) { 
         return classRE(cls).test(el.className); 
@@ -186,18 +202,4 @@
             toggleClass(el, cls); 
         });
         return this;
-    };
-
-    function prop(el, name, value) {
-        var prop = (propertyFix[name]) ? propertyFix[name] : name;
-        if (prop in el) {
-            if (typeof value === undefined ) return el[prop];
-            el[prop] = value;
-            return this;
-        }
-    };
-
-
-    proto.prop = function (name, value) {
-        __each(this.els, function (el) { prop(el, name, value); }, this);
     };
