@@ -24,7 +24,10 @@
         return newFunc(el, type, callback);
     }
 
-
+    // ## Api.prototype.bind ##
+    // Adds ability to bind event callbacks to all elements in our collection
+    // while preventing binding the same callback multiple times to the same
+    // element / event combination
     proto.bind = function(type, callback){
         var elKey;
         __each(this.els, function (el, idx) {
@@ -40,6 +43,12 @@
         return this;
     };
 
+    // ## unbind ##
+    // Function to setup event handlers on elements
+    // ### Args:
+    //  * _el {DOMElement}_: the element to remove event listener from
+    //  * _type {String}_: the event type to remove a listener for
+    //  * _callback {Function}_: listener function to remove
     function unbind(el, type, handle) {
         var newFunc = (document.removeEventListener) ?
         function( el, type, handle ) {
@@ -52,25 +61,38 @@
         newFunc(el, type, handle);
     }
 
+    // ## Api.prototype.unbind ##
+    // Unbind _handle_ for _type_ on all elements in our collection
     proto.unbind = function(type, handle) {
         __each(this.els, function (el) { unbind(el, type, handle); });
         return this;
     };
 
+    // ## trigger ##
+    // Function to fire event (_evt_) on element (_el_)
+    // ### Args:
+    //  * _el {DOMElement}_: the element to fire the event on
+    //  * _evt {String}_: the event type to fire
     function trigger(el, evt){
         if (evt in el) el[evt]();
         return this;
     }
 
+    // ## Api.prototype.trigger ##
+    // Fire the given event (_evt_) on all elements in our collection
     proto.trigger = function(evt) {
         __each(this.els, function (el) { trigger(el, evt); });
         return this;
     };
 
-
-    proto.one = function (type, func) {
+    // ## Api.prototype.one ##
+    // Binds a single-use listener (_callback_) to an event _type_ on each
+    // element in our collection.
+    // ### Args:
+    // _type {String}_: 
+    proto.one = function (type, callback) {
         __each(this.els, function (el) {
-            var callback = __bind(el, func),
+            var callback = __bind(el, callback),
                 handle,
                 wrapper = function (event) {
                     callback(event);
