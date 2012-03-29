@@ -49,7 +49,7 @@
     }
 
     proto.unbind = function(type, handle) {
-        for (var i=0; i<this.length; i++) unbind(this[i], type, handle);
+        __each(this.els, function (el) { unbind(el, type, handle); });
         return this;
     };
 
@@ -59,7 +59,7 @@
     }
 
     proto.trigger = function(evt) {
-        for (var i=0; i<this.length; i++) trigger(this[i], evt);
+        __each(this.els, function (el) { trigger(el, evt); });
         return this;
     };
 
