@@ -3,11 +3,13 @@
 
     // Get a shorter handle to Array's prototype (helps with minification too)
     var ArrProto = Array.prototype,
+        nativeBind = Function.prototype.bind,
         breaker = {};
 
     // ## __arrayify ##
     // Having an integer `length` property and a `splice` method makes
     // an instance an [Array-like object](http://cl.ly/3k0i3n0A2R2h2t303B0x)
+    // ### Args:
     // _obj {Object}_: the object to extend to be Array-like
     // _items {Array-like object}_: items to add as the indexed 'array' items
     // _append {Boolean}_: should we append _items_ to the end of any existing items?
@@ -105,10 +107,17 @@
     // * _obj {Object}_: the _this_ context to bind to _func_
     // * _func {Function}_: the function to bind the context to
     function __bind(obj, func) { 
-        return (func.bind) ? func.bind(obj) : function() { func.apply(obj, __slice(arguments)); }
+        var bindArgs = __slice(arguments, 2);
+        bindArgs.unshift(obj);
+        if (typeof func !== 'function' || typeof func.call !== 'function' ) {
+            throw Error('func is not a function');
+        }
+        return (func.bind && nativeBind && nativeBind === func.bind) ? 
+            nativeBind.apply(func, bindArgs) : 
+            function() { func.apply && func.apply(obj, bindArgs.concat(__slice(arguments))); }
     }
 
-    // ## __LC ##
+    // ## __lc ##
     // Shortcut for String.toLowerCase
     function __lc(string) { return (''+string).toLowerCase(); }
 
