@@ -12,7 +12,7 @@
 // for the current environment.
 var DOMSmack = (function () {
 
-    //import("DOMSmack/helpers.js");
+    //import("DOMSMack/helpers.js");
 
     var __el_list = [],
 
@@ -41,12 +41,12 @@ var DOMSmack = (function () {
     __arrayify(Api);
 
     // ## is ##
-    // Returns true if `el` (see `Api` above) has a tagName matching one of the 
+    // Returns true if _el_ (see _Api_ above) has a tagName matching one of the 
     // tags (or the tag if only one) or having a type matching the passed in 
     // type pseudo-tag (eg, ':text')
     // ### Args:
-    //  * `el {DOMElement}`: the element to test against `tag`
-    //  * `tag {String}`: the tag, pseudo-tag or comma-separated list of 
+    //  * _el {DOMElement}_: the element to test against _tag_
+    //  * _tag {String}_: the tag, pseudo-tag or comma-separated list of 
     //     tags/pseudo-tags to test against
     function is(el, tag) {
         var _is = false,
