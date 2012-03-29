@@ -28,7 +28,9 @@
         var div = document.createElement('div'), newFunc, hasGetAttr;
         div.innerHTML = '<a href="#"></a>';
 
+        // Test to see if our current browser truly supports getAttribute
         if (div.childNodes[0].getAttribute('href') === '#') {
+            //Browser properly applies getAttribute
             newFunc = function() { return true; };
             hasGetAttribute = newFunc;
             return true;
@@ -36,6 +38,7 @@
 
         // Helps IE release memory associated with the div
         div = null;
+        // Browser DOES NOT properly apply getAttribute
         newFunc = function() { return false; };
         hasGetAttribute = newFunc;
         return false;
@@ -120,6 +123,9 @@
 
     // ## Api.prototype.attr ##
     // A simplified clone of jQuery's $().attr()
+    // ### Args:
+    // _name {String}_: the attribute name
+    // _value {multiple}_: the [optional] value to set
     proto.attr = function (name, value) {
         // If called with only one arg, return the attribute value
         if (value === undefined) return getAttr(this.el, name) ;
@@ -137,6 +143,15 @@
         return this;
     };
 
+
+    // ## prop ##
+    // Property accessor for DOM elements:
+    // If value is undefined, return the current value.
+    // If value is defined, set named property to the new value.
+    // ### Args:
+    // _el {DOM Element}_: the element to access the property on
+    // _name {String}_: the property name
+    // _value {multiple}_: the [optional] value to set
     function prop(el, name, value) {
         var prop = (propertyFix[name]) ? propertyFix[name] : name;
         if (prop in el) {
@@ -147,17 +162,41 @@
     };
 
 
+    // ## Api.prototype.prop ##
+    // _Api_-compatible interface to _prop_
+    // _name {String}_: the property name
+    // _value {multiple}_: the [optional] value to set
     proto.prop = function (name, value) {
         if (value === undefined) return prop(this.els[0], name);
         return __each(this.els, function (el) { prop(el, name, value); }, this);
 
+        // If no value passed in, return the current value for the first element
+        if (value === undefined) return prop(this.el, name);
+        // else set the value on all elements in the collection
+        __each(this.els, function (el) { prop(el, name, value); }, this);
+        return this;
     };
 
 
+    // BEGIN class manipulation/accessor functions/methods
+
+    // ## classRE ##
+    // Simple className matcher builder
+    function classRE(cls) { return new RegExp("\\b" + cls + "\\b") }
+
+    // ## hasClass ##
+    // Does _el_ have the given class name (_cls_)?
+    // ### Args:
+    // _el {DOM Element}_: the element to check for the class name
+    // _cls {String}_: the class name to look for
     function hasClass(el, cls) { 
         return classRE(cls).test(el.className); 
     }
 
+    // ## Api.prototype.hasClass ##
+    // Returns true if any of the elements in our collection has the class.
+    // ### Args:
+    // _cls {String}_: the class name to look for
     proto.hasClass = function (cls) { 
         if (this.length ===1) return hasClass(this.el, cls); 
         var has_class = false;
@@ -170,6 +209,11 @@
         return has_class;
     };
 
+    // ## addClass ##
+    // Add the given class name to _el_.
+    // ### Args:
+    // _el {DOM Element}_: the element to check for the class name
+    // _cls {String}_: the class name to add
     function addClass(el, cls) {
         var classList;
         if (!hasClass(el, cls)) {
@@ -179,24 +223,47 @@
         }
     }
 
+    // ## Api.prototype.addClass ##
+    // Returns true if any of the elements in our collection has the class.
+    // ### Args:
+    // _cls {String}_: the class name to add
     proto.addClass = function (cls) {
         __each(this.els, function (el) { addClass(el, cls) }, this);
         return this;
     };
 
+    // ## removeClass ##
+    // Remove the given class name (if it exists) from _el_.
+    // ### Args:
+    // _el {DOM Element}_: the element to check for the class name
+    // _cls {String}_: the class name to remove
     function removeClass(el, cls) {
         el.className = el.className.replace(classRE(cls), '').replace(/^\s+|\s+$/g, '');
     }
 
+    // ## Api.prototype.removeClass ##
+    // Remove the given class name (if present) from all of the elements in our collection
+    // ### Args:
+    // _cls {String}_: the class name to remove
     proto.removeClass = function (cls) {
         __each(this.els, function (el) { removeClass(el, cls) }, this);
         return this;
     };
 
+    // ## toggleClass ##
+    // Remove the given class name (if it exists) from _el_ else add it.
+    // ### Args:
+    // _el {DOM Element}_: the element to check for the class name
+    // _cls {String}_: the class name to remove or add
     function toggleClass(el, cls) {
         return (hasClass(el, cls)) ? removeClass(el, cls) : addClass(el, cls)
     }
 
+    // ## Api.prototype.toggleClass ##
+    // Remove (if present) the given class name from or add it to (if not present)
+    // all of the elements in our collection.
+    // ### Args:
+    // _cls {String}_: the class name to remove
     proto.toggleClass = function (cls) {
         __each(this.els, function (el) { 
             toggleClass(el, cls); 
