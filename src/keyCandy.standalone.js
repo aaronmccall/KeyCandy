@@ -1,4 +1,4 @@
-//import("DOMSmack.js");
+//import("DOMSmack/DOMSmack.js");
 
 var KEYCANDY_DOM_LIB = DOMSmack;
 

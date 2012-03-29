@@ -18,30 +18,27 @@ var DOMSmack = (function () {
 
     __el_evt_map = {};
 
+    // Our main API constructor
+    // Sets up the Array-like object
     function Api(selector){
         if (typeof selector === "string") {
             this.els = __slice(document.querySelectorAll(selector));
-            this.length = this.els.length;
-            if (this.els.length == 1) {
-                this[0] = this.el = this.els[0];
-            } else {
-                __each(this.els, function (el, idx) {
-                    this[idx] = el;
-                }, this);
-            }
-        } else if (selector.nodeType || selector === window || selector === document) {
+        } else if (selector instanceof Api || selector instanceof NodeList) {
+            this.els = __slice(selector);
+
+        } else if ((selector.nodeType && selector.nodeType === 1) || 
+                    selector === window || selector === document) {
             this.els = [selector];
-            this.el = this[0] = selector;
-            this.length = 1;
         }
+
+        this.el = this.els[0];
+        __arrayify(this, this.els);
     }
 
     var proto = Api.prototype;
 
-    // Having an integer `length` property and a `splice` method makes
-    // Api an [Array-like object](http://cl.ly/3k0i3n0A2R2h2t303B0x)
-    proto.length = 0;
-    proto.splice = [].splice;
+    // Make Api Array-like
+    __arrayify(Api);
 
     // ## is ##
     // Returns true if `el` (see `Api` above) has a tagName matching one of the 
@@ -68,27 +65,28 @@ var DOMSmack = (function () {
         return (_lTag === _elTag);
     }
 
+    // Add is to our Api object
     proto.is = function (tag){
+        // Shortcut for when there is only one element
         if (this.length === 1) return is(this.el, tag);
-
+        // return true if any of our elements (this.els)
+        // is a match
         return __any(this.els, function (el) {
             if (is(el, tag)) isit = true;
         }, this);
-
     };
 
     //import("DOMSmack/events.js")
 
     //import("DOMSmack/attributes.js")
 
+    // Give Api an innerHTML proxy
     proto.html = function (html) {
-        for (var i=0; i<this.length; i++) {
-            this[i].innerHTML = html;
-        }
+        __each(this.els, function (el) { el.innerHTML = html });
         return this;
     };
 
-
+    // Api wrapper function -- think $() from jQuery
     function __init(selector) { 
         return new Api(selector);
     }
