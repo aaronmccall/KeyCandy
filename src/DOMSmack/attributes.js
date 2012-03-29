@@ -58,13 +58,13 @@
                 return el.setAttribute(attr, val);
             } : 
             function (el, attr, val) {
-                if (propertyFix[name]) name = propertyFix[name];
+                if (propertyFix[attr]) attr = propertyFix[attr];
 
-                if (name === 'value' && element.nodeName === 'BUTTON') {
-                    return element.getAttributeNode(name).nodeValue = value;
+                if (attr === 'value' && element.nodeAttr === 'BUTTON') {
+                    return element.getAttributeNode(attr).nodeValue = value;
                 }
 
-                return element.setAttribute(name, value);
+                return element.setAttribute(attr, value);
             };
         setAttr = newFunc;
         return newFunc(el, attr, val);
@@ -110,13 +110,11 @@
     function removeAttr(el, attr) {
         var newFunc = hasGetAttribute() ? 
             function (el, attr) {
-                if ('1-9'.indexOf(''+el.nodeType) < 0) return;
+                if (!el.nodeType || !~'19'.indexOf(''+el.nodeType)) return;
                 setAttr(el, attr, '');
                 el.removeAttributeNode(el.getAttributeNode(attr));
             } : 
-            function (el, attr) {
-                el.removeAttribute(attr);
-            };
+            function (el, attr) { el.removeAttribute(attr); };
         removeAttr = newFunc;
         return newFunc(el, attr);
     }
@@ -155,7 +153,9 @@
     function prop(el, name, value) {
         var prop = (propertyFix[name]) ? propertyFix[name] : name;
         if (prop in el) {
+            // If no value passed in, then return current value
             if (typeof value === undefined ) return el[prop];
+            // else set to new value
             el[prop] = value;
             return this;
         }
@@ -167,9 +167,6 @@
     // _name {String}_: the property name
     // _value {multiple}_: the [optional] value to set
     proto.prop = function (name, value) {
-        if (value === undefined) return prop(this.els[0], name);
-        return __each(this.els, function (el) { prop(el, name, value); }, this);
-
         // If no value passed in, return the current value for the first element
         if (value === undefined) return prop(this.el, name);
         // else set the value on all elements in the collection
@@ -198,15 +195,7 @@
     // ### Args:
     // _cls {String}_: the class name to look for
     proto.hasClass = function (cls) { 
-        if (this.length ===1) return hasClass(this.el, cls); 
-        var has_class = false;
-        __each(this.els, function (el) {
-            if (hasClass(el, cls)) {
-                has_class = true;
-                return breaker;
-            }
-        }, this);
-        return has_class;
+        return __any(this.els, function (el) { return hasClass(el, cls) }, this);
     };
 
     // ## addClass ##
@@ -265,8 +254,6 @@
     // ### Args:
     // _cls {String}_: the class name to remove
     proto.toggleClass = function (cls) {
-        __each(this.els, function (el) { 
-            toggleClass(el, cls); 
-        });
+        __each(this.els, function (el) { toggleClass(el, cls); });
         return this;
     };
