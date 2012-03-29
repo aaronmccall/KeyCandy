@@ -11,15 +11,19 @@
     function bind(el, type, callback) {
         var newFunc = (el.addEventListener) ?
             function (el, type, callback) {
-                el.addEventListener(type, callback, true);
+                el.addEventListener(type, callback, false);
+                return callback;
             } :
             function (el, type, callback) {
-                el.attachEvent('on'+type, callback);
+                var new_callback = function () { callback.call(el, window.event); };
+                el.attachEvent('on'+type, new_callback);
+                return new_callback;
             };
 
         bind = newFunc;
         return newFunc(el, type, callback);
     }
+
 
     proto.bind = function(type, callback){
         var elKey;
@@ -63,12 +67,15 @@
         return this;
     };
 
-    proto.one = function(type, func) {
-        var handle = bind(this.el, func),
-            wrapper = bind(this, function(event){
-                handle(event);
-                this.unbind(type, wrapper);
-            });
-        this.bind(type, wrapper);
-        return this;
-    };
+
+    proto.one = function (type, func) {
+        __each(this.els, function (el) {
+            var callback = __bind(el, func),
+                handle,
+                wrapper = function (event) {
+                    callback(event);
+                    unbind(el, type, handle);
+                };
+            handle = bind(el, type, wrapper);
+        });
+    }
