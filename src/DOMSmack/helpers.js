@@ -7,7 +7,7 @@
         breaker = {};
 
     // ## __arrayify ##
-    // Having an integer `length` property and a `splice` method makes
+    // Having an integer _length_ property and a _splice_ method makes
     // an instance an [Array-like object](http://cl.ly/3k0i3n0A2R2h2t303B0x)
     // ### Args:
     // _obj {Object}_: the object to extend to be Array-like
@@ -29,11 +29,11 @@
 
     // ## __any ##
     // Array.some-like functionality provided either by the native method
-    // or by an `__each`-based fallback
+    // or by an ___each_-based fallback
     // ### Args:
-    // `array {Array}`: the array we are operating on
-    // `callback {Function}`: the tester function to call on each member of `array`
-    // `context {Object}`: the [optional] `this` object for `callback`
+    // _array {Array}_: the array we are operating on
+    // _callback {Function}_: the tester function to call on each member of _array_
+    // _context {Object}_: the [optional] _this_ object for _callback_
     function __any(array, callback, context) {
         var newFunc = (ArrProto.some) ?
             function (array, callback) { 
@@ -54,9 +54,9 @@
     // Array.forEach-like functionality provided either by the native method
     // itself or a for-based fallback.
     // ### Args:
-    // `array {Array}`: the array we are operating on
-    // `callback {Function}`: the function to call on each member of `array`
-    // `context {Object}`: the [optional] `this` object for `callback`
+    // _array {Array}_: the array we are operating on
+    // _callback {Function}_: the function to call on each member of _array_
+    // _context {Object}_: the [optional] _this_ object for _callback_
     function __each(array, callback, context) {
         var newFunc = (typeof ArrProto.forEach == "function") ?
         function (array, callback, context) {
@@ -75,8 +75,8 @@
     // Array.indexOf-like functionality provided either by the native method
     // itself or a for-based fallback.
     // ### Args:
-    // `array {Array}`: the array we are operating on
-    // `val {multiple}`: value (any type is allowed) to look for in `array`
+    // _array {Array}_: the array we are operating on
+    // _val {multiple}_: value (any type is allowed) to look for in _array_
     function __indexOf (array, val) {
         var newFunc = (typeof ArrProto.indexOf === "function") ?
             function(array, val) {

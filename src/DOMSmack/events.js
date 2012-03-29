@@ -5,9 +5,9 @@
     // ## bind ##
     // Function to setup event handlers on elements
     // ### Args:
-    //  * `el {DOMElement}`: the element to add event listener to
-    //  * `type {String}`: the event type to add a listener for
-    //  * `callback {Function}`: called when event fires
+    //  * _el {DOMElement}_: the element to add event listener to
+    //  * _type {String}_: the event type to add a listener for
+    //  * _callback {Function}_: called when event fires
     function bind(el, type, callback) {
         var newFunc = (el.addEventListener) ?
             function (el, type, callback) {
