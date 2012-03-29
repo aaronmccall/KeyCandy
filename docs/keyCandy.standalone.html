@@ -4,7 +4,126 @@
 <p>Many concepts/approaches here borrowed from <a href="http://jquery.com">jQuery</a>, <br /><a href="http://zeptojs.com">Zepto</a> and DailyJS's <br /><a href="http://dailyjs.com/tags.html#lmaf">Let's Make a Framework</a></p>
 
 <p>The <a href="http://cl.ly/32401n1d3M2A3g2K410c">Javascript Russian Doll</a> concept<br />is also heavily used throughout to provide optimized functions/methods <br />for the current environment.</p></td><td class="code"><pre><code><span class="keyword">var</span> DOMSmack = (<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-</code></pre></td></tr><tr class="block"><td class="comment"><p>import("DOMSmack/helpers.js");</p></td><td class="code"></td></tr><tr class="block"><td class="comment"></td><td class="code"><pre><code>    <span class="keyword">var</span> __el_list = [],
+</code></pre></td></tr><tr class="block"><td class="comment"><p>DOMSmack helpers<br />source: src/DOMSmack/helpers.js</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>Get a shorter handle to Array's prototype (helps with minification too)</p></td><td class="code"><pre><code>    <span class="keyword">var</span> ArrProto = Array.prototype,
+        nativeBind = Function.prototype.bind,
+        breaker = {};
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__arrayify</h2>
+
+<p>Having an integer <em>length</em> property and a <em>splice</em> method makes<br />an instance an <a href="http://cl.ly/3k0i3n0A2R2h2t303B0x">Array-like object</a></p>
+
+<h3>Args:</h3>
+
+<p><em>obj {Object}</em>: the object to extend to be Array-like<br /><em>items {Array-like object}</em>: items to add as the indexed 'array' items<br /><em>append {Boolean}</em>: should we append <em>items</em> to the end of any existing items?</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__arrayify</span><span class="params">(obj, items, append)</span> {</span>
+        <span class="keyword">if</span> (obj.prototype &amp;&amp; (!obj.length || !obj.splice)) {
+            <span class="keyword">var</span> proto = obj.prototype;
+            proto.splice = [].splice;
+            proto.length = <span class="number">0</span>;
+        }
+        <span class="keyword">if</span> (!items || !items.length) <span class="keyword">return</span>;
+        items = (append ? __slice(obj) : []).concat(__slice(items));
+        __each(items, <span class="function"><span class="keyword">function</span> <span class="params">(item, idx)</span> {</span>
+            obj[idx] = item;
+        });
+        obj.length = items.length;
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__any</h2>
+
+<p>Array.some-like functionality provided either by the native method<br />or by an <em>_</em>each_-based fallback</p>
+
+<h3>Args:</h3>
+
+<p><em>array {Array}</em>: the array we are operating on<br /><em>callback {Function}</em>: the tester function to call on each member of <em>array</em><br /><em>context {Object}</em>: the [optional] <em>this</em> object for <em>callback</em></p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__any</span><span class="params">(array, callback, context)</span> {</span>
+        <span class="keyword">var</span> newFunc = (ArrProto.some) ?
+            <span class="function"><span class="keyword">function</span> <span class="params">(array, callback)</span> {</span> 
+                <span class="keyword">return</span> ArrProto.some.call(array, callback, context)
+            } :
+            <span class="function"><span class="keyword">function</span> <span class="params">(array, callback, context)</span> {</span> 
+                <span class="keyword">var</span> result = <span class="literal">false</span>;
+                __each(array||[], <span class="function"><span class="keyword">function</span> <span class="params">(val, idx, list)</span> {</span>
+                    <span class="keyword">if</span> (result || (result = callback.call(context, val, idx, list))) <span class="keyword">return</span> breaker;
+                }, context);
+                <span class="keyword">return</span> !!result;
+            }
+        __any = newFunc;
+        <span class="keyword">return</span> newFunc(array, callback, context);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__each</h2>
+
+<p>Array.forEach-like functionality provided either by the native method<br />itself or a for-based fallback.</p>
+
+<h3>Args:</h3>
+
+<p><em>array {Array}</em>: the array we are operating on<br /><em>callback {Function}</em>: the function to call on each member of <em>array</em><br /><em>context {Object}</em>: the [optional] <em>this</em> object for <em>callback</em></p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__each</span><span class="params">(array, callback, context)</span> {</span>
+        <span class="keyword">var</span> newFunc = (<span class="keyword">typeof</span> ArrProto.forEach == <span class="string">"function"</span>) ?
+        <span class="function"><span class="keyword">function</span> <span class="params">(array, callback, context)</span> {</span>
+            ArrProto.forEach.call(array, callback, context);
+        } :
+        <span class="function"><span class="keyword">function</span> <span class="params">(array, callback, context)</span> {</span>
+            <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, len = array.length; i&lt;len; i++) {
+                <span class="keyword">if</span> (i <span class="keyword">in</span> array &amp;&amp; callback.call(context, array[i], i, array)===breaker) <span class="keyword">return</span>;
+            }
+        };
+        __each = newFunc;
+        <span class="keyword">return</span> newFunc(array, callback, context);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__indexOf</h2>
+
+<p>Array.indexOf-like functionality provided either by the native method<br />itself or a for-based fallback.</p>
+
+<h3>Args:</h3>
+
+<p><em>array {Array}</em>: the array we are operating on<br /><em>val {multiple}</em>: value (any type is allowed) to look for in <em>array</em></p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__indexOf</span> <span class="params">(array, val)</span> {</span>
+        <span class="keyword">var</span> newFunc = (<span class="keyword">typeof</span> ArrProto.indexOf === <span class="string">"function"</span>) ?
+            <span class="function"><span class="keyword">function</span><span class="params">(array, val)</span> {</span>
+                <span class="keyword">return</span> ArrProto.indexOf.call(array, val);
+            } :
+            <span class="function"><span class="keyword">function</span><span class="params">(array, val)</span> {</span>
+                <span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>, j=array.length; i&lt;j; i++) {
+                    <span class="keyword">if</span> (array[i] === val) <span class="keyword">return</span> i;
+                }
+                <span class="keyword">return</span> -<span class="number">1</span>;
+            };
+        __indexOf = newFunc;
+        <span class="keyword">return</span> newFunc(array, val);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__slice</h2>
+
+<p>Quick and dirty wrapper around [].slice that allows<br />us to convert Array-like objects into actual Arrays</p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>obj {multiple}</em>: can be a String, Object or Array</li>
+<li><em>start {Integer}</em>: optional start index (0-based)</li>
+<li><em>stop {Integer}</em>: optional stop index (defaults to end)</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__slice</span><span class="params">(obj, start, stop)</span> {</span> <span class="keyword">return</span> ArrProto.slice.call(obj, start, stop); }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__bind</h2>
+
+<p>Shim for ES5 Function.bind</p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>obj {Object}</em>: the <em>this</em> context to bind to <em>func</em></li>
+<li><em>func {Function}</em>: the function to bind the context to</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__bind</span><span class="params">(obj, func)</span> {</span> 
+        <span class="keyword">var</span> bindArgs = __slice(arguments, <span class="number">2</span>);
+        bindArgs.unshift(obj);
+        <span class="keyword">if</span> (<span class="keyword">typeof</span> func !== <span class="string">'function'</span> || <span class="keyword">typeof</span> func.call !== <span class="string">'function'</span> ) {
+            <span class="keyword">throw</span> Error(<span class="string">'func is not a function'</span>);
+        }
+        <span class="keyword">return</span> (func.bind &amp;&amp; nativeBind &amp;&amp; nativeBind === func.bind) ? 
+            nativeBind.apply(func, bindArgs) : 
+            <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> func.apply &amp;&amp; func.apply(obj, bindArgs.concat(__slice(arguments))); }
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__lc</h2>
+
+<p>Shortcut for String.toLowerCase</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__lc</span><span class="params">(string)</span> {</span> <span class="keyword">return</span> (<span class="string">''</span>+string).toLowerCase(); }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>classRE</h2>
+
+<p>Simple className matcher builder</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">classRE</span><span class="params">(cls)</span> {</span> <span class="keyword">return</span> <span class="keyword">new</span> RegExp(<span class="string">"\\b"</span> + cls + <span class="string">"\\b"</span>) }
+
+    <span class="keyword">var</span> __el_list = [],
 
     __el_evt_map = {};
 </code></pre></td></tr><tr class="block"><td class="comment"><p>Our main API constructor<br />Sets up the Array-like object</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">Api</span><span class="params">(selector)</span>{</span>
@@ -26,13 +145,13 @@
 </code></pre></td></tr><tr class="block"><td class="comment"><p>Make Api Array-like</p></td><td class="code"><pre><code>    __arrayify(Api);
 </code></pre></td></tr><tr class="block"><td class="comment"><h2>is</h2>
 
-<p>Returns true if <pre><code><code>(see&lt;/code&gt;&lt;/pre&gt;Api</code> above) has a tagName matching one of the <br />tags (or the tag if only one) or having a type matching the passed in <br />type pseudo-tag (eg, ':text')</p>
+<p>Returns true if <em>el</em> (see <em>Api</em> above) has a tagName matching one of the <br />tags (or the tag if only one) or having a type matching the passed in <br />type pseudo-tag (eg, ':text')</p>
 
 <h3>Args:</h3>
 
 <ul>
-<li><code>el {DOMElement}</code>: the element to test against <code>tag</code></li>
-<li><code>tag {String}</code>: the tag, pseudo-tag or comma-separated list of 
+<li><em>el {DOMElement}</em>: the element to test against <em>tag</em></li>
+<li><em>tag {String}</em>: the tag, pseudo-tag or comma-separated list of 
 tags/pseudo-tags to test against</li>
 </ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">is</span><span class="params">(el, tag)</span> {</span>
         <span class="keyword">var</span> _is = <span class="literal">false</span>,
@@ -54,7 +173,300 @@ tags/pseudo-tags to test against</li>
             <span class="keyword">if</span> (is(el, tag)) isit = <span class="literal">true</span>;
         }, <span class="keyword">this</span>);
     };
-</code></pre></td></tr><tr class="block"><td class="comment"><p>import("DOMSmack/events.js")</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>import("DOMSmack/attributes.js")</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>Give Api an innerHTML proxy</p></td><td class="code"><pre><code>    proto.html = <span class="function"><span class="keyword">function</span> <span class="params">(html)</span> {</span>
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>DOMSmack Events</h2>
+
+<p><em>source: src/DOMSmack/events.js</em></p></td><td class="code"></td></tr><tr class="block"><td class="comment"><h2>bind</h2>
+
+<p>Function to setup event handlers on elements</p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>el {DOMElement}</em>: the element to add event listener to</li>
+<li><em>type {String}</em>: the event type to add a listener for</li>
+<li><em>callback {Function}</em>: called when event fires</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">bind</span><span class="params">(el, type, callback)</span> {</span>
+        <span class="keyword">var</span> newFunc = (el.addEventListener) ?
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, type, callback)</span> {</span>
+                el.addEventListener(type, callback, <span class="literal">false</span>);
+                <span class="keyword">return</span> callback;
+            } :
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, type, callback)</span> {</span>
+                <span class="keyword">var</span> new_callback = <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span> callback.call(el, window.event); };
+                el.attachEvent(<span class="string">'on'</span>+type, new_callback);
+                <span class="keyword">return</span> new_callback;
+            };
+
+        bind = newFunc;
+        <span class="keyword">return</span> newFunc(el, type, callback);
+    }
+
+
+    proto.bind = <span class="function"><span class="keyword">function</span><span class="params">(type, callback)</span>{</span>
+        <span class="keyword">var</span> elKey;
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el, idx)</span> {</span>
+            <span class="keyword">if</span> (__indexOf(__el_list, el) &lt; <span class="number">0</span>) __el_list.push(el);
+            elKey = __indexOf(__el_list, el);
+            __el_evt_map[elKey] = __el_evt_map[elKey] || {};
+            __el_evt_map[elKey][type] = __el_evt_map[elKey][type] || [];
+            <span class="keyword">if</span> (__indexOf(__el_evt_map[elKey][type], callback) &lt; <span class="number">0</span>) {
+                bind(el, type, callback);
+                __el_evt_map[elKey][type].push(callback);
+            }
+        }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+
+    <span class="function"><span class="keyword">function</span> <span class="title">unbind</span><span class="params">(el, type, handle)</span> {</span>
+        <span class="keyword">var</span> newFunc = (document.removeEventListener) ?
+        <span class="function"><span class="keyword">function</span><span class="params">( el, type, handle )</span> {</span>
+            <span class="keyword">if</span> ( el.removeEventListener ) el.removeEventListener( type, handle, <span class="literal">false</span> );
+        } : 
+        <span class="function"><span class="keyword">function</span><span class="params">( el, type, handle )</span> {</span>
+            <span class="keyword">if</span> ( el.detachEvent ) el.detachEvent( <span class="string">"on"</span> + type, handle );
+        };
+        unbind = newFunc;
+        newFunc(el, type, handle);
+    }
+
+    proto.unbind = <span class="function"><span class="keyword">function</span><span class="params">(type, handle)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> unbind(el, type, handle); });
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+
+    <span class="function"><span class="keyword">function</span> <span class="title">trigger</span><span class="params">(el, evt)</span>{</span>
+        <span class="keyword">if</span> (evt <span class="keyword">in</span> el) el[evt]();
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    }
+
+    proto.trigger = <span class="function"><span class="keyword">function</span><span class="params">(evt)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> trigger(el, evt); });
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+
+
+    proto.one = <span class="function"><span class="keyword">function</span> <span class="params">(type, func)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span>
+            <span class="keyword">var</span> callback = __bind(el, func),
+                handle,
+                wrapper = <span class="function"><span class="keyword">function</span> <span class="params">(event)</span> {</span>
+                    callback(event);
+                    unbind(el, type, handle);
+                };
+            handle = bind(el, type, wrapper);
+        });
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>DOMSmack attribute accessors and manipulators<br />source: src/DOMSmack/attributes.js</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>Map HTML attribute names to DOM property names</p></td><td class="code"><pre><code>    <span class="keyword">var</span> propertyFix = {
+        tabindex:        <span class="string">'tabIndex'</span>,
+        readonly:        <span class="string">'readOnly'</span>,
+        <span class="string">'for'</span>:           <span class="string">'htmlFor'</span>,
+        <span class="string">'class'</span>:         <span class="string">'className'</span>,
+        maxlength:       <span class="string">'maxLength'</span>,
+        cellspacing:     <span class="string">'cellSpacing'</span>,
+        cellpadding:     <span class="string">'cellPadding'</span>,
+        rowspan:         <span class="string">'rowSpan'</span>,
+        colspan:         <span class="string">'colSpan'</span>,
+        usemap:          <span class="string">'useMap'</span>,
+        frameborder:     <span class="string">'frameBorder'</span>,
+        contenteditable: <span class="string">'contentEditable'</span>
+    },
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Old IE versions require an additional parameter to getAttribute</p></td><td class="code"><pre><code>    getAttributeParamFix = { width: <span class="number">1</span>, height: <span class="number">1</span>, src: <span class="number">1</span>, href: <span class="number">1</span> };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>hasGetAttribute</h2>
+
+<p>Determines whether the current environment supports proper getAttribute <br />DOM method. Rewrites itself on first call to simply return true or false<br />based on the results of the initial test.</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">hasGetAttribute</span><span class="params">()</span> {</span>
+        <span class="keyword">var</span> div = document.createElement(<span class="string">'div'</span>), newFunc, hasGetAttr;
+        div.innerHTML = <span class="string">'&lt;a href="#">&lt;/a>'</span>;
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Test to see if our current browser truly supports getAttribute</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (div.childNodes[<span class="number">0</span>].getAttribute(<span class="string">'href'</span>) === <span class="string">'#'</span>) {</code></pre></td></tr><tr class="block"><td class="comment"><p>Browser properly applies getAttribute</p></td><td class="code"><pre><code>            newFunc = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> <span class="keyword">return</span> <span class="literal">true</span>; };
+            hasGetAttribute = newFunc;
+            <span class="keyword">return</span> <span class="literal">true</span>;
+        }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Helps IE release memory associated with the div</p></td><td class="code"><pre><code>        div = <span class="literal">null</span>;</code></pre></td></tr><tr class="block"><td class="comment"><p>Browser DOES NOT properly apply getAttribute</p></td><td class="code"><pre><code>        newFunc = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> <span class="keyword">return</span> <span class="literal">false</span>; };
+        hasGetAttribute = newFunc;
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>setAttr</h2>
+
+<p>Sets attribute <em>attr</em> to value <em>val</em> on element <em>el</em><br />Rewrites itself to an optimized code path depending on browser's support<br />for standard DOM methods</p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>el {DOM Element}</em>: the element to set an attribute value on</li>
+<li><em>attr {String}</em>: the attribute name</li>
+<li><em>val {String}</em>: the value to assign to the attribute</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">setAttr</span><span class="params">(el, attr, val)</span> {</span>
+        <span class="keyword">var</span> newFunc = hasGetAttribute() ? 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr, val)</span> {</span>
+                <span class="keyword">return</span> el.setAttribute(attr, val);
+            } : 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr, val)</span> {</span>
+                <span class="keyword">if</span> (propertyFix[attr]) attr = propertyFix[attr];
+
+                <span class="keyword">if</span> (attr === <span class="string">'value'</span> &amp;&amp; element.nodeAttr === <span class="string">'BUTTON'</span>) {
+                    <span class="keyword">return</span> element.getAttributeNode(attr).nodeValue = value;
+                }
+
+                <span class="keyword">return</span> element.setAttribute(attr, value);
+            };
+        setAttr = newFunc;
+        <span class="keyword">return</span> newFunc(el, attr, val);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>getAttr</h2>
+
+<p>Retrieves the current value of attribute <em>attr</em> on element <em>el</em></p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>el {DOM Element}</em>: the element to get the attribute value from</li>
+<li><em>attr {String}</em>: the attribute name</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">getAttr</span><span class="params">(el, attr)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>Build a customized attribute getter for the current browser.</p></td><td class="code"><pre><code>        <span class="keyword">var</span> newFunc = hasGetAttribute() ?</code></pre></td></tr><tr class="block"><td class="comment"><p>Browser supports standard attribute access</p></td><td class="code"><pre><code>            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span> <span class="keyword">return</span> el.getAttribute(attr); } : 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>Swap HTML attribute name for DOM property name, if required.</p></td><td class="code"><pre><code>                <span class="keyword">if</span> (propertyFix[attr]) attr = propertyFix[attr];
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Old IE versions require the extra param for some attributes.</p></td><td class="code"><pre><code>                <span class="keyword">if</span> (getAttributeParamFix[attr]) <span class="keyword">return</span> el.getAttribute(attr, <span class="number">2</span>);
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Old IE versions do weird things with button.value.</p></td><td class="code"><pre><code>                <span class="keyword">if</span> (attr === <span class="string">'value'</span> &amp;&amp; el.nodeName === <span class="string">'BUTTON'</span>) {
+                  <span class="keyword">return</span> el.getAttributeNode(attr).nodeValue;
+                }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Default to standard DOM API</p></td><td class="code"><pre><code>                <span class="keyword">return</span> el.getAttribute(attr);
+            };</code></pre></td></tr><tr class="block"><td class="comment"><p>Replace <pre><code>r</code></pre> with the function that is optimized for the browser<br />for all calls after the initial one.</p></td><td class="code"><pre><code>        getAttr = newFunc;</code></pre></td></tr><tr class="block"><td class="comment"><p>On the intial call we need to return a call to <pre><code>c</code></pre></p></td><td class="code"><pre><code>        <span class="keyword">return</span> newFunc(el, attr);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>removeAttr</h2>
+
+<p>Removes an attribute from an element</p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>el {DOM Element}</em>: the element to remove the attribute from</li>
+<li><em>attr {String}</em>: the attribute name</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">removeAttr</span><span class="params">(el, attr)</span> {</span>
+        <span class="keyword">var</span> newFunc = hasGetAttribute() ? 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span>
+                <span class="keyword">if</span> (!el.nodeType || !~<span class="string">'19'</span>.indexOf(<span class="string">''</span>+el.nodeType)) <span class="keyword">return</span>;
+                setAttr(el, attr, <span class="string">''</span>);
+                el.removeAttributeNode(el.getAttributeNode(attr));
+            } : 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span> el.removeAttribute(attr); };
+        removeAttr = newFunc;
+        <span class="keyword">return</span> newFunc(el, attr);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.attr</h2>
+
+<p>A simplified clone of jQuery's $().attr()</p>
+
+<h3>Args:</h3>
+
+<p><em>name {String}</em>: the attribute name<br /><em>value {multiple}</em>: the [optional] value to set</p></td><td class="code"><pre><code>    proto.attr = <span class="function"><span class="keyword">function</span> <span class="params">(name, value)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>If called with only one arg, return the attribute value</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (value === undefined) <span class="keyword">return</span> getAttr(<span class="keyword">this</span>.el, name) ;
+
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span>
+            <span class="keyword">if</span> (value === <span class="literal">null</span>) {</code></pre></td></tr><tr class="block"><td class="comment"><p>Otherwise, if <em>value</em> is explicitly null, remove the attribute.</p></td><td class="code"><pre><code>                removeAttr(el, name);
+            } <span class="keyword">else</span> {</code></pre></td></tr><tr class="block"><td class="comment"><p>If not, set it to the new value.</p></td><td class="code"><pre><code>                setAttr(el, name, value);
+            }
+        });</code></pre></td></tr><tr class="block"><td class="comment"><p>Chainify!</p></td><td class="code"><pre><code>        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>prop</h2>
+
+<p>Property accessor for DOM elements:<br />If value is undefined, return the current value.<br />If value is defined, set named property to the new value.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to access the property on<br /><em>name {String}</em>: the property name<br /><em>value {multiple}</em>: the [optional] value to set</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">prop</span><span class="params">(el, name, value)</span> {</span>
+        <span class="keyword">var</span> prop = (propertyFix[name]) ? propertyFix[name] : name;
+        <span class="keyword">if</span> (prop <span class="keyword">in</span> el) {</code></pre></td></tr><tr class="block"><td class="comment"><p>If no value passed in, then return current value</p></td><td class="code"><pre><code>            <span class="keyword">if</span> (<span class="keyword">typeof</span> value === undefined ) <span class="keyword">return</span> el[prop];</code></pre></td></tr><tr class="block"><td class="comment"><p>else set to new value</p></td><td class="code"><pre><code>            el[prop] = value;
+            <span class="keyword">return</span> <span class="keyword">this</span>;
+        }
+    };
+
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.prop</h2>
+
+<p><em>Api</em>-compatible interface to <em>prop</em><br /><em>name {String}</em>: the property name<br /><em>value {multiple}</em>: the [optional] value to set</p></td><td class="code"><pre><code>    proto.prop = <span class="function"><span class="keyword">function</span> <span class="params">(name, value)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>If no value passed in, return the current value for the first element</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (value === undefined) <span class="keyword">return</span> prop(<span class="keyword">this</span>.el, name);</code></pre></td></tr><tr class="block"><td class="comment"><p>else set the value on all elements in the collection</p></td><td class="code"><pre><code>        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> prop(el, name, value); }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+
+</code></pre></td></tr><tr class="block"><td class="comment"><p>BEGIN class manipulation/accessor functions/methods</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><h2>classRE</h2>
+
+<p>Simple className matcher builder</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">classRE</span><span class="params">(cls)</span> {</span> <span class="keyword">return</span> <span class="keyword">new</span> RegExp(<span class="string">"\\b"</span> + cls + <span class="string">"\\b"</span>) }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>hasClass</h2>
+
+<p>Does <em>el</em> have the given class name (<em>cls</em>)?</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to look for</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">hasClass</span><span class="params">(el, cls)</span> {</span> 
+        <span class="keyword">return</span> classRE(cls).test(el.className); 
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.hasClass</h2>
+
+<p>Returns true if any of the elements in our collection has the class.</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to look for</p></td><td class="code"><pre><code>    proto.hasClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span> 
+        <span class="keyword">return</span> __any(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> <span class="keyword">return</span> hasClass(el, cls) }, <span class="keyword">this</span>);
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>addClass</h2>
+
+<p>Add the given class name to <em>el</em>.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to add</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">addClass</span><span class="params">(el, cls)</span> {</span>
+        <span class="keyword">var</span> classList;
+        <span class="keyword">if</span> (!hasClass(el, cls)) {
+            classList = (el.className||<span class="string">""</span>).split(<span class="regexp">/\s+/g</span>);
+            classList.push(cls);
+            el.className = classList.join(<span class="string">' '</span>);
+        }
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.addClass</h2>
+
+<p>Returns true if any of the elements in our collection has the class.</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to add</p></td><td class="code"><pre><code>    proto.addClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> addClass(el, cls) }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>removeClass</h2>
+
+<p>Remove the given class name (if it exists) from <em>el</em>.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to remove</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">removeClass</span><span class="params">(el, cls)</span> {</span>
+        el.className = el.className.replace(classRE(cls), <span class="string">''</span>).replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">''</span>);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.removeClass</h2>
+
+<p>Remove the given class name (if present) from all of the elements in our collection</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to remove</p></td><td class="code"><pre><code>    proto.removeClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> removeClass(el, cls) }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>toggleClass</h2>
+
+<p>Remove the given class name (if it exists) from <em>el</em> else add it.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to remove or add</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">toggleClass</span><span class="params">(el, cls)</span> {</span>
+        <span class="keyword">return</span> (hasClass(el, cls)) ? removeClass(el, cls) : addClass(el, cls)
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.toggleClass</h2>
+
+<p>Remove (if present) the given class name from or add it to (if not present)<br />all of the elements in our collection.</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to remove</p></td><td class="code"><pre><code>    proto.toggleClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> toggleClass(el, cls); });
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Give Api an innerHTML proxy</p></td><td class="code"><pre><code>    proto.html = <span class="function"><span class="keyword">function</span> <span class="params">(html)</span> {</span>
         __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> el.innerHTML = html });
         <span class="keyword">return</span> <span class="keyword">this</span>;
     };
