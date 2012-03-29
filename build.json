@@ -4,6 +4,9 @@
 	"spec": "spec",
 	"ext": "ext",
 	"uglify": {},
+    "gendocs": {
+        "sources": "lib"
+    },
 	"hosts": {
 		"/": "html"
 	}
