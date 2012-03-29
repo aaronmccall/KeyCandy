@@ -5,6 +5,26 @@
     var ArrProto = Array.prototype,
         breaker = {};
 
+    // ## __arrayify ##
+    // Having an integer `length` property and a `splice` method makes
+    // an instance an [Array-like object](http://cl.ly/3k0i3n0A2R2h2t303B0x)
+    // _obj {Object}_: the object to extend to be Array-like
+    // _items {Array-like object}_: items to add as the indexed 'array' items
+    // _append {Boolean}_: should we append _items_ to the end of any existing items?
+    function __arrayify(obj, items, append) {
+        if (obj.prototype && (!obj.length || !obj.splice)) {
+            var proto = obj.prototype;
+            proto.splice = [].splice;
+            proto.length = 0;
+        }
+        if (!items || !items.length) return;
+        items = (append ? __slice(obj) : []).concat(__slice(items));
+        __each(items, function (item, idx) {
+            obj[idx] = item;
+        });
+        obj.length = items.length;
+    }
+
     // ## __any ##
     // Array.some-like functionality provided either by the native method
     // or by an `__each`-based fallback
