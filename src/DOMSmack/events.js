@@ -35,7 +35,7 @@
             elKey = __indexOf(__el_list, el);
             __el_evt_map[elKey] = __el_evt_map[elKey] || {};
             __el_evt_map[elKey][type] = __el_evt_map[elKey][type] || [];
-            if (__indexOf(__el_evt_map[elKey][type], callback) < 0) {
+            if (!~__indexOf(__el_evt_map[elKey][type], callback)) {
                 bind(el, type, callback);
                 __el_evt_map[elKey][type].push(callback);
             }

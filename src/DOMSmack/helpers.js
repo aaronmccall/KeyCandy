@@ -3,6 +3,7 @@
 
     // Get a shorter handle to Array's prototype (helps with minification too)
     var ArrProto = Array.prototype,
+        //
         nativeBind = Function.prototype.bind,
         breaker = {};
 
@@ -107,14 +108,26 @@
     // * _obj {Object}_: the _this_ context to bind to _func_
     // * _func {Function}_: the function to bind the context to
     function __bind(obj, func) { 
-        var bindArgs = __slice(arguments, 2);
-        bindArgs.unshift(obj);
         if (typeof func !== 'function' || typeof func.call !== 'function' ) {
             throw Error('func is not a function');
         }
-        return (func.bind && nativeBind && nativeBind === func.bind) ? 
-            nativeBind.apply(func, bindArgs) : 
-            function() { func.apply && func.apply(obj, bindArgs.concat(__slice(arguments))); }
+
+        var bindArgs = __slice(arguments, 2), finalBind;
+
+        if (!finalBind) {
+            finalBind =  (func.bind && nativeBind && nativeBind === func.bind) ? 
+            function (bindArgs) { 
+                bindArgs.unshift(obj);
+                return nativeBind.apply(func, bindArgs);
+            } : 
+            function (bindArgs) { 
+                return function () {
+                    func.apply(obj, bindArgs.concat(__slice(arguments))); 
+                }
+            };
+        }
+
+        return finalBind(bindArgs)
     }
 
     // ## __lc ##
