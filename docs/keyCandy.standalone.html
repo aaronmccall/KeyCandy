@@ -1,369 +1,559 @@
-<!DOCTYPE html>  <html> <head>   <title>keyCandy.standalone.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="keyCandy.html">                 keyCandy.js               </a>                                           <a class="source" href="keyCandy.standalone.html">                 keyCandy.standalone.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               keyCandy.standalone.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p><strong>gobSmack</strong> (c) 2011 Aaron McCall.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>A lightweight, minimalist set of DOM and event tools that was
-created to replace jQuery in KeyCandy's standalone version.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">gobSmack</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+<!DOCTYPE html><head><style type="text/css">pre code{display:block;padding:.5em;color:black;background:#f8f8ff}pre .comment,pre .template_comment,pre .diff .header,pre .javadoc{color:#998;font-style:italic}pre .keyword,pre .css .rule .keyword,pre .winutils,pre .javascript .title,pre .lisp .title,pre .subst{color:black;font-weight:bold}pre .number,pre .hexcolor{color:#40a070}pre .string,pre .tag .value,pre .phpdoc,pre .tex .formula{color:#d14}pre .title,pre .id{color:#900;font-weight:bold}pre .javascript .title,pre .lisp .title,pre .subst{font-weight:normal}pre .class .title,pre .haskell .label,pre .tex .command{color:#458;font-weight:bold}pre .tag,pre .tag .title,pre .rules .property,pre .django .tag .keyword{color:navy;font-weight:normal}pre .attribute,pre .variable,pre .instancevar,pre .lisp .body{color:teal}pre .regexp{color:#009926}pre .class{color:#458;font-weight:bold}pre .symbol,pre .ruby .symbol .string,pre .ruby .symbol .keyword,pre .ruby .symbol .keymethods,pre .lisp .keyword,pre .tex .special,pre .input_number{color:#990073}pre .builtin,pre .built_in,pre .lisp .title{color:#0086b3}pre .preprocessor,pre .pi,pre .doctype,pre .shebang,pre .cdata{color:#999;font-weight:bold}pre .deletion{background:#fdd}pre .addition{background:#dfd}pre .diff .change{background:#0086b3}pre .chunk{color:#aaa}pre .tex .formula{opacity:.5}#docs {margin:auto}.block {clear:both}.comment {padding: 0 10px;width:50%;background:snow}.code {width:49%;background:#f8f8ff}td {vertical-align:top}table {width:90%; border-collapse:collapse}
+</style></head><body><table id="docs"><tr class="block"><td class="comment"><p><strong>DOMSmack</strong> (c) 2011 Aaron McCall.</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>A lightweight, minimalist set of DOM and event tools that was<br />created to replace jQuery in KeyCandy's standalone version.</p>
 
-    <span class="kd">var</span> <span class="nx">__slice</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span> <span class="p">},</span>
+<p>Many concepts/approaches here borrowed from <a href="http://jquery.com">jQuery</a>, <br /><a href="http://zeptojs.com">Zepto</a> and DailyJS's <br /><a href="http://dailyjs.com/tags.html#lmaf">Let's Make a Framework</a></p>
 
-    <span class="nx">__indexOf</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">newFunc</span> <span class="o">=</span>  <span class="p">(</span><span class="k">typeof</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">indexOf</span> <span class="o">===</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span>
-            <span class="o">?</span> <span class="kd">function</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
-            <span class="p">}</span>
-            <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">j</span><span class="o">=</span><span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">j</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="nx">val</span><span class="p">)</span> <span class="k">return</span> <span class="nx">i</span><span class="p">;</span>
-                <span class="p">}</span>
-                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-            <span class="p">};</span>
-        <span class="nx">__indexOf</span> <span class="o">=</span> <span class="nx">newFunc</span><span class="p">;</span>
-        <span class="k">return</span> <span class="nx">newFunc</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
-    <span class="p">},</span>
+<p>The <a href="http://cl.ly/32401n1d3M2A3g2K410c">Javascript Russian Doll</a> concept<br />is also heavily used throughout to provide optimized functions/methods <br />for the current environment.</p></td><td class="code"><pre><code><span class="keyword">var</span> DOMSmack = (<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+</code></pre></td></tr><tr class="block"><td class="comment"><p>DOMSmack helpers<br />source: src/DOMSmack/helpers.js</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>Get a shorter handle to Array's prototype (helps with minification too)</p></td><td class="code"><pre><code>    <span class="keyword">var</span> ArrProto = Array.prototype,
+        nativeBind = Function.prototype.bind,
+        breaker = {};
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__arrayify</h2>
 
-    <span class="nx">__bind</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">func</span><span class="p">){</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;bind&#39;</span> <span class="k">in</span> <span class="nx">func</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">func</span><span class="p">.</span><span class="nx">bind</span> <span class="o">===</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span>
-            <span class="o">?</span> <span class="nx">func</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span>
-            <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">func</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">__slice</span><span class="p">(</span><span class="nx">arguments</span><span class="p">))</span> <span class="p">}</span>
-    <span class="p">},</span>
+<p>Having an integer <em>length</em> property and a <em>splice</em> method makes<br />an instance an <a href="http://cl.ly/3k0i3n0A2R2h2t303B0x">Array-like object</a></p>
 
-    <span class="nx">__init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selector</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="k">new</span> <span class="nx">api</span><span class="p">(</span><span class="nx">selector</span><span class="p">)</span> <span class="p">},</span>
+<h3>Args:</h3>
 
-    <span class="nx">classRE</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cls</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s2">&quot;\\b&quot;</span> <span class="o">+</span> <span class="nx">cls</span> <span class="o">+</span> <span class="s2">&quot;\\b&quot;</span><span class="p">)</span> <span class="p">},</span>
+<p><em>obj {Object}</em>: the object to extend to be Array-like<br /><em>items {Array-like object}</em>: items to add as the indexed 'array' items<br /><em>append {Boolean}</em>: should we append <em>items</em> to the end of any existing items?</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__arrayify</span><span class="params">(obj, items, append)</span> {</span>
+        <span class="keyword">if</span> (obj.prototype &amp;&amp; (!obj.length || !obj.splice)) {
+            <span class="keyword">var</span> proto = obj.prototype;
+            proto.splice = [].splice;
+            proto.length = <span class="number">0</span>;
+        }
+        <span class="keyword">if</span> (!items || !items.length) <span class="keyword">return</span>;
+        items = (append ? __slice(obj) : []).concat(__slice(items));
+        __each(items, <span class="function"><span class="keyword">function</span> <span class="params">(item, idx)</span> {</span>
+            obj[idx] = item;
+        });
+        obj.length = items.length;
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__any</h2>
 
-    <span class="nx">__el_list</span> <span class="o">=</span> <span class="p">[],</span>
+<p>Array.some-like functionality provided either by the native method<br />or by an <em>_</em>each_-based fallback</p>
 
-    <span class="nx">__el_evt_map</span> <span class="o">=</span> <span class="p">{},</span>
+<h3>Args:</h3>
 
-    <span class="nx">hasGetAttribute</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">);</span>
-        <span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&lt;a href=&quot;/example&quot;&gt;&lt;/a&gt;&#39;</span><span class="p">;</span>
+<p><em>array {Array}</em>: the array we are operating on<br /><em>callback {Function}</em>: the tester function to call on each member of <em>array</em><br /><em>context {Object}</em>: the [optional] <em>this</em> object for <em>callback</em></p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__any</span><span class="params">(array, callback, context)</span> {</span>
+        <span class="keyword">var</span> newFunc = (ArrProto.some) ?
+            <span class="function"><span class="keyword">function</span> <span class="params">(array, callback)</span> {</span> 
+                <span class="keyword">return</span> ArrProto.some.call(array, callback, context)
+            } :
+            <span class="function"><span class="keyword">function</span> <span class="params">(array, callback, context)</span> {</span> 
+                <span class="keyword">var</span> result = <span class="literal">false</span>;
+                __each(array||[], <span class="function"><span class="keyword">function</span> <span class="params">(val, idx, list)</span> {</span>
+                    <span class="keyword">if</span> (result || (result = callback.call(context, val, idx, list))) <span class="keyword">return</span> breaker;
+                }, context);
+                <span class="keyword">return</span> !!result;
+            }
+        __any = newFunc;
+        <span class="keyword">return</span> newFunc(array, callback, context);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__each</h2>
 
-        <span class="k">if</span> <span class="p">(</span><span class="nx">div</span><span class="p">.</span><span class="nx">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="s1">&#39;/example&#39;</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">hasGetAttribute</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">true</span> <span class="p">};</span>
-            <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-        <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Helps IE release memory associated with the div</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">div</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-        <span class="nx">hasGetAttribute</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">false</span> <span class="p">};</span>
-        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-    <span class="p">},</span>
+<p>Array.forEach-like functionality provided either by the native method<br />itself or a for-based fallback.</p>
 
-    <span class="nx">propertyFix</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="nx">tabindex</span><span class="o">:</span>        <span class="s1">&#39;tabIndex&#39;</span><span class="p">,</span>
-        <span class="nx">readonly</span><span class="o">:</span>        <span class="s1">&#39;readOnly&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;for&#39;</span><span class="o">:</span>           <span class="s1">&#39;htmlFor&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;class&#39;</span><span class="o">:</span>         <span class="s1">&#39;className&#39;</span><span class="p">,</span>
-        <span class="nx">maxlength</span><span class="o">:</span>       <span class="s1">&#39;maxLength&#39;</span><span class="p">,</span>
-        <span class="nx">cellspacing</span><span class="o">:</span>     <span class="s1">&#39;cellSpacing&#39;</span><span class="p">,</span>
-        <span class="nx">cellpadding</span><span class="o">:</span>     <span class="s1">&#39;cellPadding&#39;</span><span class="p">,</span>
-        <span class="nx">rowspan</span><span class="o">:</span>         <span class="s1">&#39;rowSpan&#39;</span><span class="p">,</span>
-        <span class="nx">colspan</span><span class="o">:</span>         <span class="s1">&#39;colSpan&#39;</span><span class="p">,</span>
-        <span class="nx">usemap</span><span class="o">:</span>          <span class="s1">&#39;useMap&#39;</span><span class="p">,</span>
-        <span class="nx">frameborder</span><span class="o">:</span>     <span class="s1">&#39;frameBorder&#39;</span><span class="p">,</span>
-        <span class="nx">contenteditable</span><span class="o">:</span> <span class="s1">&#39;contentEditable&#39;</span>
-    <span class="p">},</span>
-    
-    <span class="nx">getAttributeParamFix</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="nx">width</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-        <span class="nx">height</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-        <span class="nx">src</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-        <span class="nx">href</span><span class="o">:</span> <span class="kc">true</span>
-    <span class="p">},</span>
+<h3>Args:</h3>
 
-    <span class="nx">api</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selector</span><span class="p">){</span>
-        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">selector</span> <span class="o">===</span> <span class="s2">&quot;string&quot;</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="nx">selector</span><span class="p">);</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">this</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">__slice</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">).</span><span class="nx">pop</span><span class="p">();</span>
-            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">elArray</span> <span class="o">=</span> <span class="nx">__slice</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">),</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">elArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="nx">i</span><span class="o">===</span><span class="mi">0</span><span class="p">)</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">elArray</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-                    <span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">elArray</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">selector</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">||</span> <span class="nx">selector</span> <span class="o">===</span> <span class="nb">window</span> <span class="o">||</span> <span class="nx">selector</span> <span class="o">===</span> <span class="nb">document</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">selector</span><span class="p">;</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">},</span>
+<p><em>array {Array}</em>: the array we are operating on<br /><em>callback {Function}</em>: the function to call on each member of <em>array</em><br /><em>context {Object}</em>: the [optional] <em>this</em> object for <em>callback</em></p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__each</span><span class="params">(array, callback, context)</span> {</span>
+        <span class="keyword">var</span> newFunc = (<span class="keyword">typeof</span> ArrProto.forEach == <span class="string">"function"</span>) ?
+        <span class="function"><span class="keyword">function</span> <span class="params">(array, callback, context)</span> {</span>
+            ArrProto.forEach.call(array, callback, context);
+        } :
+        <span class="function"><span class="keyword">function</span> <span class="params">(array, callback, context)</span> {</span>
+            <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, len = array.length; i&lt;len; i++) {
+                <span class="keyword">if</span> (i <span class="keyword">in</span> array &amp;&amp; callback.call(context, array[i], i, array)===breaker) <span class="keyword">return</span>;
+            }
+        };
+        __each = newFunc;
+        <span class="keyword">return</span> newFunc(array, callback, context);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__indexOf</h2>
 
-    <span class="nx">proto</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+<p>Array.indexOf-like functionality provided either by the native method<br />itself or a for-based fallback.</p>
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">is</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">){</span>
-        <span class="kd">var</span> <span class="nx">_is</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span><span class="nx">tagArray</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">tag</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">tagArray</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="sr">/,\s*/g</span><span class="p">);</span>
-            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">len</span><span class="o">=</span><span class="nx">tagArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">tagArray</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">tagName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">tagArray</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="nx">tagArray</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="p">(</span><span class="nx">tag</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">tagName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">());</span>
-    <span class="p">};</span>
+<h3>Args:</h3>
 
-    <span class="kd">function</span> <span class="nx">bind</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">newFunc</span> <span class="o">=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">addEventListener</span>
-            <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-                <span class="nx">el</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-            <span class="p">}</span>
-            <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-                <span class="nx">el</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="s1">&#39;on&#39;</span><span class="o">+</span><span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
-            <span class="p">};</span>
+<p><em>array {Array}</em>: the array we are operating on<br /><em>val {multiple}</em>: value (any type is allowed) to look for in <em>array</em></p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__indexOf</span> <span class="params">(array, val)</span> {</span>
+        <span class="keyword">var</span> newFunc = (<span class="keyword">typeof</span> ArrProto.indexOf === <span class="string">"function"</span>) ?
+            <span class="function"><span class="keyword">function</span><span class="params">(array, val)</span> {</span>
+                <span class="keyword">return</span> ArrProto.indexOf.call(array, val);
+            } :
+            <span class="function"><span class="keyword">function</span><span class="params">(array, val)</span> {</span>
+                <span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>, j=array.length; i&lt;j; i++) {
+                    <span class="keyword">if</span> (array[i] === val) <span class="keyword">return</span> i;
+                }
+                <span class="keyword">return</span> -<span class="number">1</span>;
+            };
+        __indexOf = newFunc;
+        <span class="keyword">return</span> newFunc(array, val);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__slice</h2>
 
-        <span class="nx">bind</span> <span class="o">=</span> <span class="nx">newFunc</span><span class="p">;</span>
-        <span class="k">return</span> <span class="nx">newFunc</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
-    <span class="p">}</span>
+<p>Quick and dirty wrapper around [].slice that allows<br />us to convert Array-like objects into actual Arrays</p>
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">bind</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
-        <span class="kd">var</span> <span class="nx">elKey</span><span class="p">;</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">__indexOf</span><span class="p">(</span><span class="nx">__el_list</span><span class="p">,</span> <span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">__el_list</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
-            <span class="nx">elKey</span> <span class="o">=</span> <span class="nx">__indexOf</span><span class="p">(</span><span class="nx">__el_list</span><span class="p">,</span> <span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
-            <span class="nx">__el_evt_map</span><span class="p">[</span><span class="nx">elKey</span><span class="p">]</span> <span class="o">=</span> <span class="nx">__el_evt_map</span><span class="p">[</span><span class="nx">elKey</span><span class="p">]</span> <span class="o">||</span> <span class="p">{};</span>
-            <span class="nx">__el_evt_map</span><span class="p">[</span><span class="nx">elKey</span><span class="p">][</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="nx">__el_evt_map</span><span class="p">[</span><span class="nx">elKey</span><span class="p">][</span><span class="nx">type</span><span class="p">]</span> <span class="o">||</span> <span class="p">[];</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">__indexOf</span><span class="p">(</span><span class="nx">__el_evt_map</span><span class="p">[</span><span class="nx">elKey</span><span class="p">][</span><span class="nx">type</span><span class="p">],</span> <span class="nx">callback</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                <span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
-                <span class="nx">__el_evt_map</span><span class="p">[</span><span class="nx">elKey</span><span class="p">][</span><span class="nx">type</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+<h3>Args:</h3>
 
-    <span class="kd">function</span> <span class="nx">hasClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">classRE</span><span class="p">(</span><span class="nx">cls</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">el</span><span class="p">.</span><span class="nx">className</span><span class="p">);</span> <span class="p">}</span>
+<ul>
+<li><em>obj {multiple}</em>: can be a String, Object or Array</li>
+<li><em>start {Integer}</em>: optional start index (0-based)</li>
+<li><em>stop {Integer}</em>: optional stop index (defaults to end)</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__slice</span><span class="params">(obj, start, stop)</span> {</span> <span class="keyword">return</span> ArrProto.slice.call(obj, start, stop); }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__bind</h2>
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">hasClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cls</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">hasClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">)</span> <span class="p">};</span>
+<p>Shim for ES5 Function.bind</p>
 
-    <span class="kd">function</span> <span class="nx">addClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">classList</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">))</span> <span class="p">{</span>
-            <span class="nx">classList</span> <span class="o">=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">className</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="sr">/\s+/g</span><span class="p">);</span>
-            <span class="nx">classList</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">cls</span><span class="p">);</span>
-            <span class="nx">el</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">classList</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<h3>Args:</h3>
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">addClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cls</span><span class="p">){</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">cls</span><span class="p">);</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+<ul>
+<li><em>obj {Object}</em>: the <em>this</em> context to bind to <em>func</em></li>
+<li><em>func {Function}</em>: the function to bind the context to</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__bind</span><span class="params">(obj, func)</span> {</span> 
+        <span class="keyword">var</span> bindArgs = __slice(arguments, <span class="number">2</span>);
+        bindArgs.unshift(obj);
+        <span class="keyword">if</span> (<span class="keyword">typeof</span> func !== <span class="string">'function'</span> || <span class="keyword">typeof</span> func.call !== <span class="string">'function'</span> ) {
+            <span class="keyword">throw</span> Error(<span class="string">'func is not a function'</span>);
+        }
+        <span class="keyword">return</span> (func.bind &amp;&amp; nativeBind &amp;&amp; nativeBind === func.bind) ? 
+            nativeBind.apply(func, bindArgs) : 
+            <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> func.apply &amp;&amp; func.apply(obj, bindArgs.concat(__slice(arguments))); }
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>__lc</h2>
 
-    <span class="kd">function</span> <span class="nx">removeClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">el</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">className</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">classRE</span><span class="p">(</span><span class="nx">cls</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^\s+/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
-    <span class="p">}</span>
+<p>Shortcut for String.toLowerCase</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__lc</span><span class="params">(string)</span> {</span> <span class="keyword">return</span> (<span class="string">''</span>+string).toLowerCase(); }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>classRE</h2>
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">removeClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cls</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">cls</span><span class="p">);</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+<p>Simple className matcher builder</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">classRE</span><span class="params">(cls)</span> {</span> <span class="keyword">return</span> <span class="keyword">new</span> RegExp(<span class="string">"\\b"</span> + cls + <span class="string">"\\b"</span>) }
 
-    <span class="kd">function</span> <span class="nx">toggleClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">))</span> <span class="p">{</span>
-            <span class="nx">removeClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">);</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">addClass</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">cls</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+    <span class="keyword">var</span> __el_list = [],
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">toggleClass</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cls</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="nx">toggleClass</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">cls</span><span class="p">);</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+    __el_evt_map = {};
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Our main API constructor<br />Sets up the Array-like object</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">Api</span><span class="params">(selector)</span>{</span>
+        <span class="keyword">if</span> (<span class="keyword">typeof</span> selector === <span class="string">"string"</span>) {
+            <span class="keyword">this</span>.els = __slice(document.querySelectorAll(selector));
+        } <span class="keyword">else</span> <span class="keyword">if</span> (selector <span class="keyword">instanceof</span> Api || selector <span class="keyword">instanceof</span> NodeList) {
+            <span class="keyword">this</span>.els = __slice(selector);
 
-    <span class="kd">function</span> <span class="nx">trigger</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">evt</span><span class="p">){</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">evt</span> <span class="k">in</span> <span class="nx">el</span><span class="p">)</span> <span class="nx">el</span><span class="p">[</span><span class="nx">evt</span><span class="p">]();</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">}</span>
+        } <span class="keyword">else</span> <span class="keyword">if</span> ((selector.nodeType &amp;&amp; selector.nodeType === <span class="number">1</span>) || 
+                    selector === window || selector === document) {
+            <span class="keyword">this</span>.els = [selector];
+        }
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">trigger</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="nx">trigger</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">evt</span><span class="p">);</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+        <span class="keyword">this</span>.el = <span class="keyword">this</span>.els[<span class="number">0</span>];
+        __arrayify(<span class="keyword">this</span>, <span class="keyword">this</span>.els);
+    }
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">one</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">func</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">handle</span> <span class="o">=</span> <span class="nx">__bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">,</span> <span class="nx">func</span><span class="p">),</span>
-            <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">__bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
-                <span class="nx">handle</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
-                <span class="k">this</span><span class="p">.</span><span class="nx">unbind</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">wrapper</span><span class="p">);</span>
-            <span class="p">});</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">wrapper</span><span class="p">);</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+    <span class="keyword">var</span> proto = Api.prototype;
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Make Api Array-like</p></td><td class="code"><pre><code>    __arrayify(Api);
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>is</h2>
 
-    <span class="kd">function</span> <span class="nx">unbind</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">newFunc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">removeEventListener</span>
-            <span class="o">?</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span> <span class="p">)</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span> <span class="nx">el</span><span class="p">.</span><span class="nx">removeEventListener</span> <span class="p">)</span> <span class="nx">el</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span>
-        <span class="p">}</span>
-            <span class="o">:</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span> <span class="p">)</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span> <span class="nx">el</span><span class="p">.</span><span class="nx">detachEvent</span> <span class="p">)</span> <span class="nx">el</span><span class="p">.</span><span class="nx">detachEvent</span><span class="p">(</span> <span class="s2">&quot;on&quot;</span> <span class="o">+</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span> <span class="p">);</span>
-        <span class="p">};</span>
-        <span class="nx">unbind</span> <span class="o">=</span> <span class="nx">newFunc</span><span class="p">;</span>
-        <span class="nx">newFunc</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span><span class="p">);</span>
-    <span class="p">}</span>
+<p>Returns true if <em>el</em> (see <em>Api</em> above) has a tagName matching one of the <br />tags (or the tag if only one) or having a type matching the passed in <br />type pseudo-tag (eg, ':text')</p>
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">unbind</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="nx">unbind</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handle</span><span class="p">);</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+<h3>Args:</h3>
 
-    <span class="kd">function</span> <span class="nx">setAttr</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">newFunc</span> <span class="o">=</span> <span class="nx">hasGetAttribute</span><span class="p">()</span>
-            <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="nx">el</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">attr</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
-            <span class="p">}</span>
-            <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">propertyFix</span><span class="p">[</span><span class="nx">name</span><span class="p">])</span> <span class="p">{</span>
-                    <span class="nx">name</span> <span class="o">=</span> <span class="nx">propertyFix</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
-                <span class="p">}</span>
+<ul>
+<li><em>el {DOMElement}</em>: the element to test against <em>tag</em></li>
+<li><em>tag {String}</em>: the tag, pseudo-tag or comma-separated list of 
+tags/pseudo-tags to test against</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">is</span><span class="params">(el, tag)</span> {</span>
+        <span class="keyword">var</span> _is = <span class="literal">false</span>,
+            _elTag = __lc(el.tagName),
+            _lTag = __lc(tag),
+            tagArray;
+        <span class="keyword">if</span> (~tag.indexOf(<span class="string">','</span>)) {
+            tagArray = _lTag.split(<span class="regexp">/,\s*/g</span>);
+            <span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>, len=tagArray.length; i&lt;len; i++) {
+                <span class="keyword">if</span> (tagArray[i] === _elTag) <span class="keyword">return</span> <span class="literal">true</span>;
+                <span class="keyword">if</span> (tagArray[i].indexOf(<span class="string">':'</span>) === <span class="number">0</span>) {
+                    <span class="keyword">if</span> (tagArray[i].substr(<span class="number">1</span>) === __lc(el.type)) <span class="keyword">return</span> <span class="literal">true</span>;
+                }
+            }
+        }
+        <span class="keyword">return</span> (_lTag === _elTag);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Add is to our Api object</p></td><td class="code"><pre><code>    proto.is = <span class="function"><span class="keyword">function</span> <span class="params">(tag)</span>{</span></code></pre></td></tr><tr class="block"><td class="comment"><p>Shortcut for when there is only one element</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (<span class="keyword">this</span>.length === <span class="number">1</span>) <span class="keyword">return</span> is(<span class="keyword">this</span>.el, tag);</code></pre></td></tr><tr class="block"><td class="comment"><p>return true if any of our elements (this.els)<br />is a match</p></td><td class="code"><pre><code>        <span class="keyword">return</span> __any(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span>
+            <span class="keyword">if</span> (is(el, tag)) isit = <span class="literal">true</span>;
+        }, <span class="keyword">this</span>);
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>DOMSmack Events</h2>
 
-                <span class="k">if</span> <span class="p">(</span><span class="nx">name</span> <span class="o">===</span> <span class="s1">&#39;value&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">element</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">===</span> <span class="s1">&#39;BUTTON&#39;</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="k">return</span> <span class="nx">element</span><span class="p">.</span><span class="nx">getAttributeNode</span><span class="p">(</span><span class="nx">name</span><span class="p">).</span><span class="nx">nodeValue</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-                <span class="p">}</span>
+<p><em>source: src/DOMSmack/events.js</em></p></td><td class="code"></td></tr><tr class="block"><td class="comment"><h2>bind</h2>
 
-                <span class="k">return</span> <span class="nx">element</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-            <span class="p">};</span>
-        <span class="nx">setAttr</span> <span class="o">=</span> <span class="nx">newFunc</span><span class="p">;</span>
-        <span class="k">return</span> <span class="nx">newFunc</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
-    <span class="p">}</span>
+<p>Function to setup event handlers on elements</p>
 
-    <span class="kd">function</span> <span class="nx">getAttr</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">newFunc</span> <span class="o">=</span> <span class="nx">hasGetAttribute</span><span class="p">()</span>
-            <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="nx">el</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">attr</span><span class="p">);</span>
-            <span class="p">}</span>
-            <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">propertyFix</span><span class="p">[</span><span class="nx">attr</span><span class="p">])</span> <span class="p">{</span>
-                    <span class="nx">attr</span> <span class="o">=</span> <span class="nx">propertyFix</span><span class="p">[</span><span class="nx">attr</span><span class="p">];</span>
-                <span class="p">}</span>
+<h3>Args:</h3>
 
-                <span class="k">if</span> <span class="p">(</span><span class="nx">getAttributeParamFix</span><span class="p">[</span><span class="nx">attr</span><span class="p">])</span> <span class="p">{</span>
-                    <span class="k">return</span> <span class="nx">el</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">attr</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
-                <span class="p">}</span>
+<ul>
+<li><em>el {DOMElement}</em>: the element to add event listener to</li>
+<li><em>type {String}</em>: the event type to add a listener for</li>
+<li><em>callback {Function}</em>: called when event fires</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">bind</span><span class="params">(el, type, callback)</span> {</span>
+        <span class="keyword">var</span> newFunc = (el.addEventListener) ?
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, type, callback)</span> {</span>
+                el.addEventListener(type, callback, <span class="literal">false</span>);
+                <span class="keyword">return</span> callback;
+            } :
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, type, callback)</span> {</span>
+                <span class="keyword">var</span> new_callback = <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span> callback.call(el, window.event); };
+                el.attachEvent(<span class="string">'on'</span>+type, new_callback);
+                <span class="keyword">return</span> new_callback;
+            };
 
-                <span class="k">if</span> <span class="p">(</span><span class="nx">attr</span> <span class="o">===</span> <span class="s1">&#39;value&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">el</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">===</span> <span class="s1">&#39;BUTTON&#39;</span><span class="p">)</span> <span class="p">{</span>
-                  <span class="k">return</span> <span class="nx">el</span><span class="p">.</span><span class="nx">getAttributeNode</span><span class="p">(</span><span class="nx">attr</span><span class="p">).</span><span class="nx">nodeValue</span><span class="p">;</span>
-                <span class="p">}</span>
-                <span class="k">return</span> <span class="nx">el</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">attr</span><span class="p">);</span>
-            <span class="p">};</span>
-        <span class="nx">getAttr</span> <span class="o">=</span> <span class="nx">newFunc</span><span class="p">;</span>
-        <span class="k">return</span> <span class="nx">newFunc</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">);</span>
-    <span class="p">}</span>
+        bind = newFunc;
+        <span class="keyword">return</span> newFunc(el, type, callback);
+    }
 
-    <span class="kd">function</span> <span class="nx">removeAttr</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">newFunc</span> <span class="o">=</span> <span class="nx">hasGetAttribute</span><span class="p">()</span>
-            <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;1-9&#39;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">+</span><span class="nx">el</span><span class="p">.</span><span class="nx">nodeType</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
-                <span class="nx">setAttr</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
-                <span class="nx">el</span><span class="p">.</span><span class="nx">removeAttributeNode</span><span class="p">(</span><span class="nx">el</span><span class="p">.</span><span class="nx">getAttributeNode</span><span class="p">(</span><span class="nx">attr</span><span class="p">));</span>
-            <span class="p">}</span>
-            <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-                <span class="nx">el</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="nx">attr</span><span class="p">);</span>
-            <span class="p">};</span>
-        <span class="nx">removeAttr</span> <span class="o">=</span> <span class="nx">newFunc</span><span class="p">;</span>
-        <span class="k">return</span> <span class="nx">newFunc</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">attr</span><span class="p">);</span>
-    <span class="p">}</span>
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">){</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="k">return</span> <span class="nx">getAttr</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">;</span>
+    proto.bind = <span class="function"><span class="keyword">function</span><span class="params">(type, callback)</span>{</span>
+        <span class="keyword">var</span> elKey;
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el, idx)</span> {</span>
+            <span class="keyword">if</span> (__indexOf(__el_list, el) &lt; <span class="number">0</span>) __el_list.push(el);
+            elKey = __indexOf(__el_list, el);
+            __el_evt_map[elKey] = __el_evt_map[elKey] || {};
+            __el_evt_map[elKey][type] = __el_evt_map[elKey][type] || [];
+            <span class="keyword">if</span> (__indexOf(__el_evt_map[elKey][type], callback) &lt; <span class="number">0</span>) {
+                bind(el, type, callback);
+                __el_evt_map[elKey][type].push(callback);
+            }
+        }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
 
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-                <span class="nx">removeAttr</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">name</span><span class="p">);</span>
-            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="nx">setAttr</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span>
+    <span class="function"><span class="keyword">function</span> <span class="title">unbind</span><span class="params">(el, type, handle)</span> {</span>
+        <span class="keyword">var</span> newFunc = (document.removeEventListener) ?
+        <span class="function"><span class="keyword">function</span><span class="params">( el, type, handle )</span> {</span>
+            <span class="keyword">if</span> ( el.removeEventListener ) el.removeEventListener( type, handle, <span class="literal">false</span> );
+        } : 
+        <span class="function"><span class="keyword">function</span><span class="params">( el, type, handle )</span> {</span>
+            <span class="keyword">if</span> ( el.detachEvent ) el.detachEvent( <span class="string">"on"</span> + type, handle );
+        };
+        unbind = newFunc;
+        newFunc(el, type, handle);
+    }
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">prop</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">){</span>
-        <span class="kd">var</span> <span class="nx">prop</span> <span class="o">=</span> <span class="p">(</span><span class="nx">propertyFix</span><span class="p">[</span><span class="nx">name</span><span class="p">])</span> <span class="o">?</span> <span class="nx">propertyFix</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">:</span> <span class="nx">name</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">prop</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">value</span> <span class="o">===</span> <span class="kc">undefined</span> <span class="p">)</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">[</span><span class="nx">prop</span><span class="p">];</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">[</span><span class="nx">prop</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">};</span>
+    proto.unbind = <span class="function"><span class="keyword">function</span><span class="params">(type, handle)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> unbind(el, type, handle); });
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
 
-    <span class="nx">proto</span><span class="p">.</span><span class="nx">html</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">html</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">html</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Expose our initializer function as the public gobSmack or $ function.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">return</span> <span class="nx">__init</span><span class="p">;</span>
-<span class="p">})();</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p><strong>KeyCandy</strong> (c) 2011 Aaron McCall.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Contributors: Beau Sorenson</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p><a href="http://creativecommons.org/licenses/MIT/">MIT license</a>.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Key Candy makes your web app melt in your hands not on your mouse!
-Provides tooltips for elements with accesskey attributes and focuses/activates
-elements with an accesskey in a standardized, cross-browser, cross-platform way.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">KeyCandy</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$</span><span class="p">){</span>
-    <span class="kd">var</span> <span class="nx">agent</span> <span class="o">=</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">,</span>
-    <span class="nx">os</span> <span class="o">=</span> <span class="sr">/Linux|Windows|Macintosh/</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">agent</span><span class="p">).</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">(),</span>
-    <span class="nx">browser</span> <span class="o">=</span> <span class="p">(</span><span class="nx">agent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;WebKit&#39;</span><span class="p">)</span><span class="o">&gt;-</span><span class="mi">1</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;webkit&#39;</span> <span class="o">:</span> <span class="sr">/Gecko|MSIE|Opera/</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">agent</span><span class="p">).</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">(),</span>
-    <span class="nx">os_browser_map</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">macintosh</span><span class="o">:</span> <span class="mi">91</span><span class="p">,</span> <span class="nx">linux</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nx">windows</span><span class="o">:</span> <span class="mi">17</span> <span class="p">},</span>
-    <span class="nx">target</span><span class="p">,</span>
-    <span class="nx">_class</span> <span class="o">=</span> <span class="s1">&#39;keycandy&#39;</span><span class="p">,</span>
-    <span class="nx">_remove_class</span> <span class="o">=</span> <span class="s1">&#39;removeClass&#39;</span><span class="p">,</span>
-    <span class="nx">_default_parent</span> <span class="o">=</span> <span class="s1">&#39;body&#39;</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Set accesskey tooltip control key to default for OS: CTRL for Windows and Linux and ⌘ for Mac Os</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">_control_key</span> <span class="o">=</span> <span class="p">(</span><span class="nx">os_browser_map</span><span class="p">[</span><span class="nx">os</span><span class="p">])</span> <span class="o">?</span> <span class="nx">os_browser_map</span><span class="p">[</span><span class="nx">os</span><span class="p">]</span> <span class="o">:</span> <span class="mi">17</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Don't require the control key to activate the accesskey'd elements</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">_req_control_key</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
-    <span class="nx">_valid_mod_keys</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;⇧&#39;</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nx">shift</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nx">option</span><span class="o">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">&#39;⌥&#39;</span><span class="o">:</span> <span class="mi">18</span><span class="p">,</span> <span class="nx">alt</span><span class="o">:</span> <span class="mi">18</span><span class="p">,</span> <span class="nx">ctrl</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nx">control</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nx">command</span><span class="o">:</span> <span class="mi">91</span><span class="p">,</span> <span class="s1">&#39;⌘&#39;</span><span class="o">:</span> <span class="mi">91</span> <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Set modifier key that allows activating accesskey'd elements while a 'typeable' element has focus</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">_mod_key</span> <span class="o">=</span> <span class="s1">&#39;alt&#39;</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>Store active modifier keys here</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">_active_mods</span> <span class="o">=</span> <span class="p">{</span><span class="mi">16</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="mi">17</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="mi">18</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="mi">91</span><span class="o">:</span> <span class="kc">false</span> <span class="p">},</span>
-    <span class="nx">attr_key_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;windows&#39;</span><span class="o">:</span> <span class="s1">&#39;ctrl&#39;</span><span class="p">,</span> <span class="s1">&#39;linux&#39;</span><span class="o">:</span> <span class="s1">&#39;ctrl&#39;</span><span class="p">,</span> <span class="s1">&#39;macintosh&#39;</span><span class="o">:</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="s1">&#39;2318&#39;</span><span class="p">,</span><span class="mi">16</span><span class="p">))},</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Handler for keydown events: sets active modifier keys and triggers appropriate events for accesskey'd elements</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">handle_keydown</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
-        <span class="kd">var</span> <span class="nx">$class_target</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_target</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">_target</span><span class="p">)</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">_default_parent</span><span class="p">),</span>
-            <span class="nx">_target</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">,</span>
-            <span class="nx">_tag</span> <span class="o">=</span> <span class="nx">_target</span><span class="p">.</span><span class="nx">tagName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
-            <span class="nx">$target</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">_target</span><span class="p">),</span>
-            <span class="nx">_code</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>Is this a keydown that we may need to handle?</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_accesskey_event</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_active_mods</span><span class="p">[</span><span class="nx">_control_key</span><span class="p">]</span><span class="o">||!</span><span class="nx">_req_control_key</span><span class="p">),</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Is the current key code a valid accesskey value?</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_valid_accesskey_code</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_code</span> <span class="o">&gt;</span> <span class="mi">47</span> <span class="o">&amp;&amp;</span> <span class="nx">_code</span> <span class="o">&lt;</span> <span class="mi">58</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nx">_code</span> <span class="o">&gt;</span> <span class="mi">64</span> <span class="o">&amp;&amp;</span> <span class="nx">_code</span> <span class="o">&lt;</span> <span class="mi">91</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nx">_code</span> <span class="o">&gt;</span> <span class="mi">96</span> <span class="o">&amp;&amp;</span> <span class="nx">_code</span> <span class="o">&lt;</span> <span class="mi">123</span><span class="p">),</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>If it is, build a selector to retrieve the accesskey'd element.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_selector</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_valid_accesskey_code</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;[accesskey=&quot;&#39;</span> <span class="o">+</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">_code</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot;]&#39;</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
-            <span class="nx">$el</span> <span class="o">=</span> <span class="p">(</span><span class="nx">_selector</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">_selector</span><span class="p">)</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
-            <span class="nx">_old_idx</span><span class="p">,</span>
-            <span class="nx">_typeable</span><span class="p">,</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>A smart link clicker</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">_click_link</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">link</span><span class="p">)</span> <span class="p">{</span>
-                <span class="kd">var</span> <span class="nx">cancelled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="function"><span class="keyword">function</span> <span class="title">trigger</span><span class="params">(el, evt)</span>{</span>
+        <span class="keyword">if</span> (evt <span class="keyword">in</span> el) el[evt]();
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    }
 
-                <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createEvent</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="kd">var</span> <span class="nx">event</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createEvent</span><span class="p">(</span><span class="s2">&quot;MouseEvents&quot;</span><span class="p">);</span>
-                    <span class="nx">event</span><span class="p">.</span><span class="nx">initMouseEvent</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="o">!</span><span class="mi">0</span><span class="p">,</span> <span class="o">!</span><span class="mi">0</span><span class="p">,</span> <span class="nb">window</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">!</span><span class="mi">1</span><span class="p">,</span> <span class="o">!</span><span class="mi">1</span><span class="p">,</span> <span class="o">!</span><span class="mi">1</span><span class="p">,</span> <span class="o">!</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
-                    <span class="nx">cancelled</span> <span class="o">=</span> <span class="o">!</span><span class="nx">link</span><span class="p">.</span><span class="nx">dispatchEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
-                <span class="p">}</span>
-                <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">link</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="nx">cancelled</span> <span class="o">=</span> <span class="o">!</span><span class="nx">link</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s2">&quot;onclick&quot;</span><span class="p">);</span>
-                <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>If no event handler has prevented default link click behavior, navigate to the href.</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">cancelled</span> <span class="o">&amp;&amp;</span> <span class="nx">link</span><span class="p">.</span><span class="nx">href</span><span class="p">)</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="nx">link</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
-            <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>Normalize right and left ⌘ keys on Mac Os</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">_code</span> <span class="o">==</span> <span class="mi">93</span> <span class="o">||</span> <span class="nx">_code</span> <span class="o">==</span> <span class="mi">224</span><span class="p">)</span> <span class="nx">_code</span> <span class="o">=</span> <span class="mi">91</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Workaround for Opera Mac's insane handling of the ⌘ key</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">_code</span> <span class="o">==</span> <span class="mi">17</span> <span class="o">&amp;&amp;</span> <span class="nb">window</span><span class="p">.</span><span class="nx">opera</span> <span class="o">&amp;&amp;</span> <span class="nx">_control_key</span> <span class="o">==</span> <span class="mi">91</span> <span class="o">&amp;&amp;</span> <span class="nx">event</span><span class="p">.</span><span class="nx">ctrlKey</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="nx">_code</span> <span class="o">=</span> <span class="mi">91</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>If the current key code is a modifier key, set it active.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">_active_mods</span><span class="p">[</span><span class="nx">_code</span><span class="p">]</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="nx">_active_mods</span><span class="p">[</span><span class="nx">_code</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>Are we supposed to be typing write now? Meaning: Does a typeable element
-have focus and is the modifier key not pressed?</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">_typeable</span> <span class="o">=</span> <span class="p">(</span><span class="sr">/^(sel|tex)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">_tag</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nx">_tag</span> <span class="o">===</span> <span class="s1">&#39;input&#39;</span>
-                  <span class="o">&amp;&amp;</span> <span class="sr">/^(tex|pas|ema|sea|tel|url|dat)/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">_target</span><span class="p">.</span><span class="nx">type</span><span class="p">)))</span>
-                  <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_active_mods</span><span class="p">[</span><span class="nx">_valid_mod_keys</span><span class="p">[</span><span class="nx">_mod_key</span><span class="p">]];</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <p>If the current key is the tooltip control key, toggle the tooltip revealing class.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">_code</span> <span class="o">===</span> <span class="nx">_control_key</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_typeable</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">$class_target</span><span class="p">.</span><span class="nx">toggleClass</span><span class="p">(</span><span class="nx">_class</span><span class="p">);</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nx">_accesskey_event</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">_typeable</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">_valid_accesskey_code</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="nx">$el</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <p>Let's activate an accesskey'd element!</p>             </td>             <td class="code">               <div class="highlight"><pre>                        <span class="nx">$el</span> <span class="o">=</span> <span class="p">(</span><span class="nx">$el</span><span class="p">.</span><span class="nx">is</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">))</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;for&#39;</span><span class="p">))</span> <span class="o">:</span> <span class="nx">$el</span><span class="p">;</span>
-                        <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">$el</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">el_tag</span> <span class="o">=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">tagName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
-                        <span class="kd">var</span> <span class="nx">_action</span> <span class="o">=</span> <span class="nx">$el</span><span class="p">.</span><span class="nx">is</span><span class="p">(</span><span class="s1">&#39;:text, :password, textarea, select&#39;</span><span class="p">)</span><span class="o">?</span><span class="s1">&#39;focus&#39;</span><span class="o">:</span><span class="s1">&#39;click&#39;</span><span class="p">;</span>
-                        <span class="k">if</span> <span class="p">(</span><span class="nx">el_tag</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">el</span><span class="p">.</span><span class="nx">href</span><span class="p">)</span> <span class="p">{</span>
-                            <span class="nx">_click_link</span><span class="p">(</span><span class="nx">el</span><span class="p">);</span>
-                        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">el_tag</span> <span class="o">==</span> <span class="s1">&#39;select&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span><span class="o">==</span><span class="s1">&#39;gecko&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">_tag</span><span class="o">!=</span><span class="s1">&#39;select&#39;</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>Gecko does some really crazy stuff with keydown bleeding through all attempts to prevent keypress.
-So we are going to get the selectedIndex and set it back as soon as the event finishes.</p>             </td>             <td class="code">               <div class="highlight"><pre>                            <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">_idx</span><span class="p">){</span>
-                                <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span> <span class="nx">el</span><span class="p">.</span><span class="nx">selectedIndex</span><span class="o">=</span><span class="nx">_idx</span><span class="p">;</span> <span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
-                            <span class="p">})(</span><span class="nx">el</span><span class="p">,</span> <span class="nx">el</span><span class="p">.</span><span class="nx">selectedIndex</span><span class="p">);</span>
-                        <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <p>Don't type the character if we are in a typeable element and don't bubble up the DOM.</p>             </td>             <td class="code">               <div class="highlight"><pre>                        <span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
-                        <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <p>Focus or click the element depending on what is appropriate.</p>             </td>             <td class="code">               <div class="highlight"><pre>                        <span class="nx">$el</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="nx">_action</span><span class="p">);</span>
+    proto.trigger = <span class="function"><span class="keyword">function</span><span class="params">(evt)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> trigger(el, evt); });
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
 
-                    <span class="p">}</span>
-                <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <p>Remove the tooltip revealer class</p>             </td>             <td class="code">               <div class="highlight"><pre>                <span class="nx">$class_target</span><span class="p">[</span><span class="nx">_remove_class</span><span class="p">](</span><span class="nx">_class</span><span class="p">);</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <p>Keyup handler that clears modifier keys from active modifiers.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">unset_modkey</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">_code</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">;</span><span class="k">if</span> <span class="p">(</span><span class="nx">_code</span> <span class="o">==</span> <span class="mi">93</span> <span class="o">||</span> <span class="nx">_code</span> <span class="o">==</span> <span class="mi">224</span><span class="p">)</span> <span class="nx">_code</span> <span class="o">=</span> <span class="mi">91</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">opera</span> <span class="o">&amp;&amp;</span> <span class="nx">_code</span> <span class="o">==</span> <span class="mi">17</span> <span class="o">&amp;&amp;</span> <span class="nx">event</span><span class="p">.</span><span class="nx">ctrlKey</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="nx">_code</span> <span class="o">=</span> <span class="mi">91</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>IF this is a modifier key, clear it from active modifiers.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">_code</span> <span class="k">in</span> <span class="nx">_active_mods</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">_active_mods</span><span class="p">[</span><span class="nx">_code</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">};</span>
 
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="nx">version</span><span class="o">:</span> <span class="s1">&#39;1.0RC&#39;</span><span class="p">,</span>
-        <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">opt</span><span class="p">){</span>
-            <span class="nx">opt</span> <span class="o">||</span> <span class="p">(</span><span class="nx">opt</span> <span class="o">=</span> <span class="p">{});</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <p>Set options</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">opt</span><span class="p">.</span><span class="nx">ctrlKey</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">_control_key</span> <span class="o">=</span> <span class="nx">opt</span><span class="p">.</span><span class="nx">ctrlKey</span><span class="p">);</span>
-            <span class="nx">opt</span><span class="p">.</span><span class="nx">reqCtrlKey</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">_req_control_key</span> <span class="o">=</span> <span class="nx">opt</span><span class="p">.</span><span class="nx">reqCtrlKey</span><span class="p">);</span>
-            <span class="nx">opt</span><span class="p">.</span><span class="nx">modKey</span> <span class="o">&amp;&amp;</span> <span class="nx">_valid_mod_keys</span><span class="p">[</span><span class="nx">opt</span><span class="p">.</span><span class="nx">modKey</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">_mod_key</span> <span class="o">=</span> <span class="nx">opt</span><span class="p">.</span><span class="nx">modKey</span><span class="p">);</span>
-            <span class="nx">target</span> <span class="o">=</span> <span class="nx">opt</span><span class="p">.</span><span class="nx">parent</span> <span class="o">||</span> <span class="nx">_default_parent</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <p>Setup event handlers for key events.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">$</span><span class="p">(</span><span class="nx">browser</span><span class="o">==</span><span class="s1">&#39;msie&#39;</span> <span class="o">?</span> <span class="nb">document</span> <span class="o">:</span> <span class="nb">window</span><span class="p">)</span>
-                <span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;keydown&#39;</span><span class="p">,</span> <span class="nx">handle_keydown</span><span class="p">)</span>
-                <span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;keyup&#39;</span><span class="p">,</span> <span class="nx">unset_modkey</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <p>Add a click handler on the class target to clear tooltips.</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">$</span><span class="p">(</span><span class="nx">target</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">)[</span><span class="nx">_remove_class</span><span class="p">](</span><span class="nx">_class</span><span class="p">);</span> <span class="p">})</span></pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <p>Add hint text to the data attribute of our class target.</p>             </td>             <td class="code">               <div class="highlight"><pre>                     <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-kchint&#39;</span><span class="p">,</span> <span class="s1">&#39;Press [&#39;</span> <span class="o">+</span> <span class="nx">attr_key_map</span><span class="p">[</span><span class="nx">os</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;] to hide tooltips.&#39;</span><span class="p">);</span>
-        <span class="p">},</span>
-        <span class="nx">os</span><span class="o">:</span> <span class="nx">os</span><span class="p">,</span>
-        <span class="nx">browser</span><span class="o">:</span> <span class="nx">browser</span>
-    <span class="p">};</span>
-<span class="p">})(</span><span class="nx">gobSmack</span><span class="p">);</span>
+    proto.one = <span class="function"><span class="keyword">function</span> <span class="params">(type, func)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span>
+            <span class="keyword">var</span> callback = __bind(el, func),
+                handle,
+                wrapper = <span class="function"><span class="keyword">function</span> <span class="params">(event)</span> {</span>
+                    callback(event);
+                    unbind(el, type, handle);
+                };
+            handle = bind(el, type, wrapper);
+        });
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>DOMSmack attribute accessors and manipulators<br />source: src/DOMSmack/attributes.js</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>Map HTML attribute names to DOM property names</p></td><td class="code"><pre><code>    <span class="keyword">var</span> propertyFix = {
+        tabindex:        <span class="string">'tabIndex'</span>,
+        readonly:        <span class="string">'readOnly'</span>,
+        <span class="string">'for'</span>:           <span class="string">'htmlFor'</span>,
+        <span class="string">'class'</span>:         <span class="string">'className'</span>,
+        maxlength:       <span class="string">'maxLength'</span>,
+        cellspacing:     <span class="string">'cellSpacing'</span>,
+        cellpadding:     <span class="string">'cellPadding'</span>,
+        rowspan:         <span class="string">'rowSpan'</span>,
+        colspan:         <span class="string">'colSpan'</span>,
+        usemap:          <span class="string">'useMap'</span>,
+        frameborder:     <span class="string">'frameBorder'</span>,
+        contenteditable: <span class="string">'contentEditable'</span>
+    },
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Old IE versions require an additional parameter to getAttribute</p></td><td class="code"><pre><code>    getAttributeParamFix = { width: <span class="number">1</span>, height: <span class="number">1</span>, src: <span class="number">1</span>, href: <span class="number">1</span> };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>hasGetAttribute</h2>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+<p>Determines whether the current environment supports proper getAttribute <br />DOM method. Rewrites itself on first call to simply return true or false<br />based on the results of the initial test.</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">hasGetAttribute</span><span class="params">()</span> {</span>
+        <span class="keyword">var</span> div = document.createElement(<span class="string">'div'</span>), newFunc, hasGetAttr;
+        div.innerHTML = <span class="string">'&lt;a href="#">&lt;/a>'</span>;
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Test to see if our current browser truly supports getAttribute</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (div.childNodes[<span class="number">0</span>].getAttribute(<span class="string">'href'</span>) === <span class="string">'#'</span>) {</code></pre></td></tr><tr class="block"><td class="comment"><p>Browser properly applies getAttribute</p></td><td class="code"><pre><code>            newFunc = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> <span class="keyword">return</span> <span class="literal">true</span>; };
+            hasGetAttribute = newFunc;
+            <span class="keyword">return</span> <span class="literal">true</span>;
+        }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Helps IE release memory associated with the div</p></td><td class="code"><pre><code>        div = <span class="literal">null</span>;</code></pre></td></tr><tr class="block"><td class="comment"><p>Browser DOES NOT properly apply getAttribute</p></td><td class="code"><pre><code>        newFunc = <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span> <span class="keyword">return</span> <span class="literal">false</span>; };
+        hasGetAttribute = newFunc;
+        <span class="keyword">return</span> <span class="literal">false</span>;
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>setAttr</h2>
+
+<p>Sets attribute <em>attr</em> to value <em>val</em> on element <em>el</em><br />Rewrites itself to an optimized code path depending on browser's support<br />for standard DOM methods</p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>el {DOM Element}</em>: the element to set an attribute value on</li>
+<li><em>attr {String}</em>: the attribute name</li>
+<li><em>val {String}</em>: the value to assign to the attribute</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">setAttr</span><span class="params">(el, attr, val)</span> {</span>
+        <span class="keyword">var</span> newFunc = hasGetAttribute() ? 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr, val)</span> {</span>
+                <span class="keyword">return</span> el.setAttribute(attr, val);
+            } : 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr, val)</span> {</span>
+                <span class="keyword">if</span> (propertyFix[attr]) attr = propertyFix[attr];
+
+                <span class="keyword">if</span> (attr === <span class="string">'value'</span> &amp;&amp; element.nodeAttr === <span class="string">'BUTTON'</span>) {
+                    <span class="keyword">return</span> element.getAttributeNode(attr).nodeValue = value;
+                }
+
+                <span class="keyword">return</span> element.setAttribute(attr, value);
+            };
+        setAttr = newFunc;
+        <span class="keyword">return</span> newFunc(el, attr, val);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>getAttr</h2>
+
+<p>Retrieves the current value of attribute <em>attr</em> on element <em>el</em></p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>el {DOM Element}</em>: the element to get the attribute value from</li>
+<li><em>attr {String}</em>: the attribute name</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">getAttr</span><span class="params">(el, attr)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>Build a customized attribute getter for the current browser.</p></td><td class="code"><pre><code>        <span class="keyword">var</span> newFunc = hasGetAttribute() ?</code></pre></td></tr><tr class="block"><td class="comment"><p>Browser supports standard attribute access</p></td><td class="code"><pre><code>            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span> <span class="keyword">return</span> el.getAttribute(attr); } : 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>Swap HTML attribute name for DOM property name, if required.</p></td><td class="code"><pre><code>                <span class="keyword">if</span> (propertyFix[attr]) attr = propertyFix[attr];
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Old IE versions require the extra param for some attributes.</p></td><td class="code"><pre><code>                <span class="keyword">if</span> (getAttributeParamFix[attr]) <span class="keyword">return</span> el.getAttribute(attr, <span class="number">2</span>);
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Old IE versions do weird things with button.value.</p></td><td class="code"><pre><code>                <span class="keyword">if</span> (attr === <span class="string">'value'</span> &amp;&amp; el.nodeName === <span class="string">'BUTTON'</span>) {
+                  <span class="keyword">return</span> el.getAttributeNode(attr).nodeValue;
+                }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Default to standard DOM API</p></td><td class="code"><pre><code>                <span class="keyword">return</span> el.getAttribute(attr);
+            };</code></pre></td></tr><tr class="block"><td class="comment"><p>Replace <pre><code>r</code></pre> with the function that is optimized for the browser<br />for all calls after the initial one.</p></td><td class="code"><pre><code>        getAttr = newFunc;</code></pre></td></tr><tr class="block"><td class="comment"><p>On the intial call we need to return a call to <pre><code>c</code></pre></p></td><td class="code"><pre><code>        <span class="keyword">return</span> newFunc(el, attr);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>removeAttr</h2>
+
+<p>Removes an attribute from an element</p>
+
+<h3>Args:</h3>
+
+<ul>
+<li><em>el {DOM Element}</em>: the element to remove the attribute from</li>
+<li><em>attr {String}</em>: the attribute name</li>
+</ul></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">removeAttr</span><span class="params">(el, attr)</span> {</span>
+        <span class="keyword">var</span> newFunc = hasGetAttribute() ? 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span>
+                <span class="keyword">if</span> (!el.nodeType || !~<span class="string">'19'</span>.indexOf(<span class="string">''</span>+el.nodeType)) <span class="keyword">return</span>;
+                setAttr(el, attr, <span class="string">''</span>);
+                el.removeAttributeNode(el.getAttributeNode(attr));
+            } : 
+            <span class="function"><span class="keyword">function</span> <span class="params">(el, attr)</span> {</span> el.removeAttribute(attr); };
+        removeAttr = newFunc;
+        <span class="keyword">return</span> newFunc(el, attr);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.attr</h2>
+
+<p>A simplified clone of jQuery's $().attr()</p>
+
+<h3>Args:</h3>
+
+<p><em>name {String}</em>: the attribute name<br /><em>value {multiple}</em>: the [optional] value to set</p></td><td class="code"><pre><code>    proto.attr = <span class="function"><span class="keyword">function</span> <span class="params">(name, value)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>If called with only one arg, return the attribute value</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (value === undefined) <span class="keyword">return</span> getAttr(<span class="keyword">this</span>.el, name) ;
+
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span>
+            <span class="keyword">if</span> (value === <span class="literal">null</span>) {</code></pre></td></tr><tr class="block"><td class="comment"><p>Otherwise, if <em>value</em> is explicitly null, remove the attribute.</p></td><td class="code"><pre><code>                removeAttr(el, name);
+            } <span class="keyword">else</span> {</code></pre></td></tr><tr class="block"><td class="comment"><p>If not, set it to the new value.</p></td><td class="code"><pre><code>                setAttr(el, name, value);
+            }
+        });</code></pre></td></tr><tr class="block"><td class="comment"><p>Chainify!</p></td><td class="code"><pre><code>        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>prop</h2>
+
+<p>Property accessor for DOM elements:<br />If value is undefined, return the current value.<br />If value is defined, set named property to the new value.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to access the property on<br /><em>name {String}</em>: the property name<br /><em>value {multiple}</em>: the [optional] value to set</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">prop</span><span class="params">(el, name, value)</span> {</span>
+        <span class="keyword">var</span> prop = (propertyFix[name]) ? propertyFix[name] : name;
+        <span class="keyword">if</span> (prop <span class="keyword">in</span> el) {</code></pre></td></tr><tr class="block"><td class="comment"><p>If no value passed in, then return current value</p></td><td class="code"><pre><code>            <span class="keyword">if</span> (<span class="keyword">typeof</span> value === undefined ) <span class="keyword">return</span> el[prop];</code></pre></td></tr><tr class="block"><td class="comment"><p>else set to new value</p></td><td class="code"><pre><code>            el[prop] = value;
+            <span class="keyword">return</span> <span class="keyword">this</span>;
+        }
+    };
+
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.prop</h2>
+
+<p><em>Api</em>-compatible interface to <em>prop</em><br /><em>name {String}</em>: the property name<br /><em>value {multiple}</em>: the [optional] value to set</p></td><td class="code"><pre><code>    proto.prop = <span class="function"><span class="keyword">function</span> <span class="params">(name, value)</span> {</span></code></pre></td></tr><tr class="block"><td class="comment"><p>If no value passed in, return the current value for the first element</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (value === undefined) <span class="keyword">return</span> prop(<span class="keyword">this</span>.el, name);</code></pre></td></tr><tr class="block"><td class="comment"><p>else set the value on all elements in the collection</p></td><td class="code"><pre><code>        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> prop(el, name, value); }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+
+</code></pre></td></tr><tr class="block"><td class="comment"><p>BEGIN class manipulation/accessor functions/methods</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><h2>classRE</h2>
+
+<p>Simple className matcher builder</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">classRE</span><span class="params">(cls)</span> {</span> <span class="keyword">return</span> <span class="keyword">new</span> RegExp(<span class="string">"\\b"</span> + cls + <span class="string">"\\b"</span>) }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>hasClass</h2>
+
+<p>Does <em>el</em> have the given class name (<em>cls</em>)?</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to look for</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">hasClass</span><span class="params">(el, cls)</span> {</span> 
+        <span class="keyword">return</span> classRE(cls).test(el.className); 
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.hasClass</h2>
+
+<p>Returns true if any of the elements in our collection has the class.</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to look for</p></td><td class="code"><pre><code>    proto.hasClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span> 
+        <span class="keyword">return</span> __any(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> <span class="keyword">return</span> hasClass(el, cls) }, <span class="keyword">this</span>);
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>addClass</h2>
+
+<p>Add the given class name to <em>el</em>.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to add</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">addClass</span><span class="params">(el, cls)</span> {</span>
+        <span class="keyword">var</span> classList;
+        <span class="keyword">if</span> (!hasClass(el, cls)) {
+            classList = (el.className||<span class="string">""</span>).split(<span class="regexp">/\s+/g</span>);
+            classList.push(cls);
+            el.className = classList.join(<span class="string">' '</span>);
+        }
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.addClass</h2>
+
+<p>Returns true if any of the elements in our collection has the class.</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to add</p></td><td class="code"><pre><code>    proto.addClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> addClass(el, cls) }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>removeClass</h2>
+
+<p>Remove the given class name (if it exists) from <em>el</em>.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to remove</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">removeClass</span><span class="params">(el, cls)</span> {</span>
+        el.className = el.className.replace(classRE(cls), <span class="string">''</span>).replace(<span class="regexp">/^\s+|\s+$/g</span>, <span class="string">''</span>);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.removeClass</h2>
+
+<p>Remove the given class name (if present) from all of the elements in our collection</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to remove</p></td><td class="code"><pre><code>    proto.removeClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> removeClass(el, cls) }, <span class="keyword">this</span>);
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>toggleClass</h2>
+
+<p>Remove the given class name (if it exists) from <em>el</em> else add it.</p>
+
+<h3>Args:</h3>
+
+<p><em>el {DOM Element}</em>: the element to check for the class name<br /><em>cls {String}</em>: the class name to remove or add</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">toggleClass</span><span class="params">(el, cls)</span> {</span>
+        <span class="keyword">return</span> (hasClass(el, cls)) ? removeClass(el, cls) : addClass(el, cls)
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><h2>Api.prototype.toggleClass</h2>
+
+<p>Remove (if present) the given class name from or add it to (if not present)<br />all of the elements in our collection.</p>
+
+<h3>Args:</h3>
+
+<p><em>cls {String}</em>: the class name to remove</p></td><td class="code"><pre><code>    proto.toggleClass = <span class="function"><span class="keyword">function</span> <span class="params">(cls)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> toggleClass(el, cls); });
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Give Api an innerHTML proxy</p></td><td class="code"><pre><code>    proto.html = <span class="function"><span class="keyword">function</span> <span class="params">(html)</span> {</span>
+        __each(<span class="keyword">this</span>.els, <span class="function"><span class="keyword">function</span> <span class="params">(el)</span> {</span> el.innerHTML = html });
+        <span class="keyword">return</span> <span class="keyword">this</span>;
+    };
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Api wrapper function -- think $() from jQuery</p></td><td class="code"><pre><code>    <span class="function"><span class="keyword">function</span> <span class="title">__init</span><span class="params">(selector)</span> {</span> 
+        <span class="keyword">return</span> <span class="keyword">new</span> Api(selector);
+    }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Expose our initializer function as the public DOMSmack or $ function.</p></td><td class="code"><pre><code>    <span class="keyword">return</span> __init;
+})();
+
+<span class="keyword">var</span> KEYCANDY_DOM_LIB = DOMSmack;
+</code></pre></td></tr><tr class="block"><td class="comment"><p>(c) 2011 Aaron McCall.</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>Contributors: Beau Sorenson</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p><a href="http://creativecommons.org/licenses/MIT/">MIT license</a>.</p></td><td class="code"></td></tr><tr class="block"><td class="comment"><p>Key Candy makes your web app melt in your hands not on your mouse!<br />Provides tooltips for elements with accesskey attributes and focuses/activates<br />elements with an accesskey in a standardized, cross-browser, cross-platform way.</p></td><td class="code"></td></tr><tr class="block"><td class="comment"></td><td class="code"><pre><code>KeyCandy = (<span class="function"><span class="keyword">function</span><span class="params">($, undefined)</span>{</span>
+    <span class="keyword">var</span> agent = navigator.userAgent,
+    os = <span class="regexp">/Linux|Windows|Macintosh/</span>.exec(agent).toString().toLowerCase(),
+    browser = (agent.indexOf(<span class="string">'WebKit'</span>)>-<span class="number">1</span>) ? <span class="string">'webkit'</span> : <span class="regexp">/Gecko|MSIE|Opera/</span>.exec(agent).toString().toLowerCase(),
+    os_browser_map = { macintosh: <span class="number">91</span>, linux: <span class="number">17</span>, windows: <span class="number">17</span> },
+    target,
+    _class = <span class="string">'keycandy'</span>,
+    _remove_class = <span class="string">'removeClass'</span>,
+    _default_parent = <span class="string">'body'</span>,</code></pre></td></tr><tr class="block"><td class="comment"><p>Set accesskey tooltip control key to default for OS: CTRL for Windows and Linux and ⌘ for Mac Os</p></td><td class="code"><pre><code>    _control_key = (os_browser_map[os]) ? os_browser_map[os] : <span class="number">17</span>,</code></pre></td></tr><tr class="block"><td class="comment"><p>Don't require the control key to activate the accesskey'd elements</p></td><td class="code"><pre><code>    _req_control_key = <span class="literal">false</span>,
+    _valid_mod_keys = { <span class="string">'⇧'</span>: <span class="number">16</span>, shift: <span class="number">16</span>, option: <span class="number">18</span>, <span class="string">'⌥'</span>: <span class="number">18</span>, alt: <span class="number">18</span>, ctrl: <span class="number">17</span>, control: <span class="number">17</span>, command: <span class="number">91</span>, <span class="string">'⌘'</span>: <span class="number">91</span> },</code></pre></td></tr><tr class="block"><td class="comment"><p>Set modifier key that allows activating accesskey'd elements while a 'typeable' element has focus</p></td><td class="code"><pre><code>    _mod_key = <span class="string">'alt'</span>,</code></pre></td></tr><tr class="block"><td class="comment"><p>Store active modifier keys here</p></td><td class="code"><pre><code>    _active_mods = {<span class="number">16</span>: <span class="literal">false</span>, <span class="number">17</span>: <span class="literal">false</span>, <span class="number">18</span>: <span class="literal">false</span>, <span class="number">91</span>: <span class="literal">false</span> },
+    attr_key_map = {<span class="string">'windows'</span>: <span class="string">'ctrl'</span>, <span class="string">'linux'</span>: <span class="string">'ctrl'</span>, <span class="string">'macintosh'</span>: String.fromCharCode(parseInt(<span class="string">'2318'</span>,<span class="number">16</span>))},</code></pre></td></tr><tr class="block"><td class="comment"><p>Handler for keydown events: sets active modifier keys and triggers appropriate events for accesskey'd elements</p></td><td class="code"><pre><code>    handle_keydown = <span class="function"><span class="keyword">function</span><span class="params">(event)</span>{</span>
+        <span class="keyword">var</span> _target = event.target,
+            $class_target = $(target||_default_parent),
+            _tag = _target.tagName.toLowerCase(),
+            $target = $(_target),
+            _code = event.keyCode,</code></pre></td></tr><tr class="block"><td class="comment"><p>Is this a keydown that we may need to handle?</p></td><td class="code"><pre><code>            _accesskey_event = (_active_mods[_control_key]||!_req_control_key),</code></pre></td></tr><tr class="block"><td class="comment"><p>Is the current key code a valid accesskey value?</p></td><td class="code"><pre><code>            _valid_accesskey_code = (_code > <span class="number">47</span> &amp;&amp; _code &lt; <span class="number">58</span>) || (_code > <span class="number">64</span> &amp;&amp; _code &lt; <span class="number">91</span>) || (_code > <span class="number">96</span> &amp;&amp; _code &lt; <span class="number">123</span>),</code></pre></td></tr><tr class="block"><td class="comment"><p>If it is, build a selector to retrieve the accesskey'd element.</p></td><td class="code"><pre><code>            _selector = (_valid_accesskey_code) ? <span class="string">'[accesskey="'</span> + String.fromCharCode(_code) + <span class="string">'"]'</span> : <span class="literal">null</span>,
+            $el = (_selector) ? $(_selector) : <span class="literal">null</span>,
+            _old_idx,
+            _typeable,</code></pre></td></tr><tr class="block"><td class="comment"><p>A smart link clicker</p></td><td class="code"><pre><code>            _click_link = <span class="function"><span class="keyword">function</span><span class="params">(link)</span> {</span>
+                <span class="keyword">var</span> cancelled = <span class="literal">false</span>;
+
+                <span class="keyword">if</span> (document.createEvent) {
+                    <span class="keyword">var</span> event = document.createEvent(<span class="string">"MouseEvents"</span>);
+                    event.initMouseEvent(<span class="string">"click"</span>, !<span class="number">0</span>, !<span class="number">0</span>, window, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, !<span class="number">1</span>, !<span class="number">1</span>, !<span class="number">1</span>, !<span class="number">1</span>, <span class="number">0</span>, <span class="literal">null</span>);
+                    cancelled = !link.dispatchEvent(event);
+                }
+                <span class="keyword">else</span> <span class="keyword">if</span> (link.fireEvent) {
+                    cancelled = !link.fireEvent(<span class="string">"onclick"</span>);
+                }
+</code></pre></td></tr><tr class="block"><td class="comment"><p>If no event handler has prevented default link click behavior, navigate to the href.</p></td><td class="code"><pre><code>                <span class="keyword">if</span> (!cancelled &amp;&amp; link.href) window.location = link.href;
+            };
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Normalize right and left ⌘ keys on Mac Os</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (_code == <span class="number">93</span> || _code == <span class="number">224</span>) _code = <span class="number">91</span>;
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Workaround for Opera Mac's insane handling of the ⌘ key</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (_code == <span class="number">17</span> &amp;&amp; window.opera &amp;&amp; _control_key == <span class="number">91</span> &amp;&amp; event.ctrlKey === <span class="literal">false</span>) _code = <span class="number">91</span>;
+        </code></pre></td></tr><tr class="block"><td class="comment"><p>If the current key code is a modifier key, set it active.</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (_active_mods[_code] !== undefined) _active_mods[_code] = <span class="literal">true</span>;
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Are we supposed to be typing write now? Meaning: Does a typeable element<br />have focus and is the modifier key not pressed?</p></td><td class="code"><pre><code>        _typeable = (<span class="regexp">/^(sel|tex)/</span>.test(_tag) || (_tag === <span class="string">'input'</span>
+                  &amp;&amp; <span class="regexp">/^(tex|pas|ema|sea|tel|url|dat)/</span>.test(_target.type)))
+                  &amp;&amp; !_active_mods[_valid_mod_keys[_mod_key]];
+</code></pre></td></tr><tr class="block"><td class="comment"><p>If the current key is the tooltip control key, toggle the tooltip revealing class.</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (_code === _control_key &amp;&amp; !_typeable) {
+            $class_target.toggleClass(_class);
+        } <span class="keyword">else</span> {
+            <span class="keyword">if</span> (_accesskey_event &amp;&amp; !_typeable) {
+                <span class="keyword">if</span> (_valid_accesskey_code) {
+                    <span class="keyword">if</span> ($el.length) {</code></pre></td></tr><tr class="block"><td class="comment"><p>Let's activate an accesskey'd element!</p></td><td class="code"><pre><code>                        $el = ($el.is(<span class="string">'label'</span>)) ? $(<span class="string">'#'</span> + $el.attr(<span class="string">'for'</span>)) : $el;
+                        <span class="keyword">var</span> el = $el[<span class="number">0</span>], el_tag = el.tagName.toLowerCase();
+                        <span class="keyword">var</span> _action = $el.is(<span class="string">':text, :password, textarea, select'</span>)?<span class="string">'focus'</span>:<span class="string">'click'</span>;
+                        <span class="keyword">if</span> (el_tag == <span class="string">'a'</span> &amp;&amp; el.href) {
+                            _click_link(el);
+                        } <span class="keyword">else</span> <span class="keyword">if</span> (el_tag == <span class="string">'select'</span> &amp;&amp; browser==<span class="string">'gecko'</span> &amp;&amp; _tag!=<span class="string">'select'</span>) {</code></pre></td></tr><tr class="block"><td class="comment"><p>Gecko does some really crazy stuff with keydown bleeding through all attempts to prevent keypress.<br />So we are going to get the selectedIndex and set it back as soon as the event finishes.  </p></td><td class="code"><pre><code>                            (<span class="function"><span class="keyword">function</span><span class="params">(el, _idx)</span>{</span>
+                                setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span> el.selectedIndex=_idx; }, <span class="number">0</span>);
+                            })(el, el.selectedIndex);
+                        }</code></pre></td></tr><tr class="block"><td class="comment"><p>Don't type the character if we are in a typeable element and don't bubble up the DOM.</p></td><td class="code"><pre><code>                        event.stopPropagation();
+                        event.preventDefault();</code></pre></td></tr><tr class="block"><td class="comment"><p>Focus or click the element depending on what is appropriate.</p></td><td class="code"><pre><code>                        $el.trigger(_action);
+
+                    }
+                }</code></pre></td></tr><tr class="block"><td class="comment"><p>Remove the tooltip revealer class</p></td><td class="code"><pre><code>                $class_target[_remove_class](_class);
+            }
+        }
+    },</code></pre></td></tr><tr class="block"><td class="comment"><p>Keyup handler that clears modifier keys from active modifiers.</p></td><td class="code"><pre><code>    unset_modkey = <span class="function"><span class="keyword">function</span><span class="params">(event)</span> {</span>
+        <span class="keyword">var</span> _code = event.keyCode;<span class="keyword">if</span> (_code == <span class="number">93</span> || _code == <span class="number">224</span>) _code = <span class="number">91</span>;
+        <span class="keyword">if</span> (window.opera &amp;&amp; _code == <span class="number">17</span> &amp;&amp; event.ctrlKey === <span class="literal">false</span>) _code = <span class="number">91</span>;</code></pre></td></tr><tr class="block"><td class="comment"><p>IF this is a modifier key, clear it from active modifiers.</p></td><td class="code"><pre><code>        <span class="keyword">if</span> (_code <span class="keyword">in</span> _active_mods) {
+            _active_mods[_code] = <span class="literal">false</span>;
+        }
+    };
+
+    <span class="keyword">return</span> {
+        version: <span class="string">'1.0'</span>,
+        init: <span class="function"><span class="keyword">function</span><span class="params">(opt)</span>{</span>
+            opt || (opt = {});
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Set options</p></td><td class="code"><pre><code>            opt.ctrlKey &amp;&amp; (_control_key = opt.ctrlKey);
+            opt.reqCtrlKey &amp;&amp; (_req_control_key = opt.reqCtrlKey);
+            opt.modKey &amp;&amp; _valid_mod_keys[opt.modKey] &amp;&amp; (_mod_key = opt.modKey);
+            target = opt.parent || _default_parent;
+</code></pre></td></tr><tr class="block"><td class="comment"><p>Setup event handlers for key events.</p></td><td class="code"><pre><code>            $(browser==<span class="string">'msie'</span> ? document : window)
+                .bind(<span class="string">'keydown'</span>, handle_keydown)
+                .bind(<span class="string">'keyup'</span>, unset_modkey);</code></pre></td></tr><tr class="block"><td class="comment"><p>Add a click handler on the class target to clear tooltips.</p></td><td class="code"><pre><code>            $(target).bind(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span>{</span> $(<span class="keyword">this</span>)[_remove_class](_class); })</code></pre></td></tr><tr class="block"><td class="comment"><p>Add hint text to the data attribute of our class target.</p></td><td class="code"><pre><code>                     .attr(<span class="string">'data-kchint'</span>, <span class="string">'Press ['</span> + attr_key_map[os] + <span class="string">'] to hide tooltips.'</span>);
+        },
+        os: os,
+        browser: browser
+    };
+})(window.KEYCANDY_DOM_LIB || window.$);</code></pre></td></tr></table></body>
