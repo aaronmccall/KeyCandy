@@ -51,8 +51,7 @@ KeyCandy = (function($, undefined){
                     var event = document.createEvent("MouseEvents");
                     event.initMouseEvent("click", !0, !0, window, 0, 0, 0, 0, 0, !1, !1, !1, !1, 0, null);
                     cancelled = !link.dispatchEvent(event);
-                }
-                else if (link.fireEvent) {
+                } else if (link.fireEvent) {
                     cancelled = !link.fireEvent("onclick");
                 }
 
@@ -65,15 +64,15 @@ KeyCandy = (function($, undefined){
 
         // Workaround for Opera Mac's insane handling of the ⌘ key
         if (_code == 17 && window.opera && _control_key == 91 && event.ctrlKey === false) _code = 91;
-        
+
         // If the current key code is a modifier key, set it active.
         if (_active_mods[_code] !== undefined) _active_mods[_code] = true;
 
         // Are we supposed to be typing write now? Meaning: Does a typeable element
         // have focus and is the modifier key not pressed?
-        _typeable = (/^(sel|tex)/.test(_tag) || (_tag === 'input'
-                  && /^(tex|pas|ema|sea|tel|url|dat)/.test(_target.type)))
-                  && !_active_mods[_valid_mod_keys[_mod_key]];
+        _typeable = (/^(sel|tex)/.test(_tag) ||
+                    (_tag === 'input' && /^(tex|pas|ema|sea|tel|url|dat)/.test(_target.type))) &&
+                    !_active_mods[_valid_mod_keys[_mod_key]];
 
         // If the current key is the tooltip control key, toggle the tooltip revealing class.
         if (_code === _control_key && !_typeable) {
@@ -110,25 +109,29 @@ KeyCandy = (function($, undefined){
     },
     // Keyup handler that clears modifier keys from active modifiers.
     unset_modkey = function(event) {
-        var _code = event.keyCode;if (_code == 93 || _code == 224) _code = 91;
+        var _code = event.keyCode;
+        if (_code == 93 || _code == 224) _code = 91;
         if (window.opera && _code == 17 && event.ctrlKey === false) _code = 91;
-        // IF this is a modifier key, clear it from active modifiers.
+        // If this is a modifier key, clear it from active modifiers.
         if (_code in _active_mods) {
             _active_mods[_code] = false;
         }
     };
 
     return {
-        version: '1.0',
+        version: '1.0.1',
         init: function(opt){
-            opt || (opt = {});
-
             // Set options
-            opt.ctrlKey && (_control_key = opt.ctrlKey);
-            opt.reqCtrlKey && (_req_control_key = opt.reqCtrlKey);
-            opt.modKey && _valid_mod_keys[opt.modKey] && (_mod_key = opt.modKey);
-            target = opt.parent || _default_parent;
-
+            if (opt) {
+                if (opt.ctrlKey) _control_key = opt.ctrlKey;
+                if (opt.reqCtrlKey) _req_control_key = opt.reqCtrlKey;
+                if (opt.modKey && _valid_mod_keys[opt.modKey]) _mod_key = opt.modKey;
+                if (opt.tooltipClass) _class = opt.tooltipClass;
+                if (opt.domLib) $ = opt.domLib;
+                target = opt.parent || _default_parent;
+            } else {
+                target = _default_parent;
+            }
             // Setup event handlers for key events.
             $(browser=='msie' ? document : window)
                 .bind('keydown', handle_keydown)
