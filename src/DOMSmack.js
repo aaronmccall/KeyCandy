@@ -12,7 +12,7 @@
 // for the current environment.
 var DOMSmack = (function () {
 
-    //import("DOMSMack/helpers.js");
+    //import("DOMSmack/helpers.js")
 
     var __el_list = [],
 
